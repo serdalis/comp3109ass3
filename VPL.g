@@ -67,9 +67,18 @@ STRING : (ALPHA | NUMBER | SCORE)*;
 fragment
 	ALPHA : ('A'..'Z' | 'a'..'z');
 
+FLOAT
+    :   NUMBER+ '.' NUMBER* EXPONENT?
+    |   '.' NUMBER+ EXPONENT
+    |   NUMBER+ EXPONENT
+    ;
+
+fragment
+	EXPONENT : ('e'|'E') (PLUS|MINUS)? NUMBER+ ;
+
 NUMBER : (DIGIT)+ ;
- 
-WHITESPACE : ( '\t' | ' ' | '\r' | '\n' | '\u000C' )+ { $channel = HIDDEN; } ;
 
 fragment
 	DIGIT : '0'..'9' ;
+ 
+WHITESPACE : ( '\t' | ' ' | '\r' | '\n' | '\u000C' )+ { $channel = HIDDEN; } ;
