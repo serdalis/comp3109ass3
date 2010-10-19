@@ -16,7 +16,8 @@ setup:
 
 antlr: setup
 	@echo "Building ANTLR parser..."
-	java -cp  antlr-3.2.jar org.antlr.tool -o $(BUILDDIR) $(GRAMMARFILE)
+	java -cp antlr-3.2.jar org.antlr.Tool -debug -o ${BUILDDIR} $(GRAMMARFILE)
+	java -classpath .:$BUILD_DIR:antlr-3.2.jar Main $1 > "${1}.s"
 
 clean:
 	rm -f $(BUILDDIR)/*
