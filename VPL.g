@@ -3,7 +3,14 @@ grammar  VPL;
 options {
 	language=Python;
 	output=AST;
-	ASTLabelType=CommonTree;
+}
+
+@header {
+	#headers for python code in members
+}
+
+@members {
+	#python code for python code used in init and after (i assume)
 }
 
 tokens {
@@ -27,34 +34,84 @@ tokens {
 * PARSER RULES
 *-----------------------------------------------------------------*/
 start 
-	: (function)*
+	: (function)* EOF!
 	;
+	
 function 
+    @init { 
+    parsed = 0; 
+    PRINTOUT = "";
+    }
+    @after { 
+    	if (parsed):
+    		#do shit    
+    }
 	: FUNC IDENT param define statment END
 	;
 param
+    @init { 
+    parsed = 0; 
+    PRINTOUT = "";
+    }
+    @after { 
+    	if (parsed):
+    		#do shit    
+    }
 	: (LB list RB)?
 	;
 list
-	: ident (COMMA ident)*
+    @init { 
+    parsed = 0; 
+    PRINTOUT = "";
+    }
+    @after { 
+    	if (parsed):
+     		#do shit   
+    }
+	: IDENT (COMMA IDENT)*
 	;
-define 
-	: (VAR list)+;
-statment 
-	: ((IDENT EQUAL element) | (IDENT LB list RB) COLEN)*
+define
+    @init { 
+    parsed = 0; 
+    PRINTOUT = "";
+    }
+    @after { 
+    	if (parsed):
+    		#do shit    
+    }
+	: (VAR list)+
 	;
-element 
-	: arithmatic | min | nest | atom
+	
+statment
+    @init { 
+    parsed = 0; 
+    PRINTOUT = "";
+    }
+    @after { 
+    	if (parsed):
+    		#do shit
+    } 
+	: (((IDENT EQUAL (arithmatic | min | nest | atom)) | (IDENT LB list RB)) COLEN)*
 	;
+	
 arithmatic 
-	: (element|atom) (PLUS | MINUS | MULT | DIV) (element|atom)
+	: (( min | nest | atom) (PLUS | MINUS | MULT | DIV))*(min | nest | atom)
 	; 
-min : MIN LB element COMMA element RB
+	
+min     : MIN LB (arithmatic | nest | atom) COMMA (arithmatic | nest | atom) RB
 	;
 nest 
-	: LB element RB
+	: (LB (arithmatic | min | atom) RB)+
 	;
 atom 
+    @init { 
+    parsed = 0; 
+    PRINTOUT = "";
+    }
+    @after { 
+    	if (parsed):
+    		#do shit    
+    } 
 	: IDENT | NUMBER
 	;
 /*----------------------------------------------------------------
