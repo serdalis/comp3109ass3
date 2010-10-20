@@ -1,3 +1,4 @@
+#!/usr/bin/evn python
 import sys
 sys.path.append('./build')
 import antlr3
@@ -6,7 +7,7 @@ from VPLLexer import VPLLexer
 from VPLParser import VPLParser
 import util
 
-char_stream = antlr3.ANTLRStringStream()
+char_stream = antlr3.ANTLRInputStream(sys.stdin)
 lexer = VPLLexer(char_stream)
 tokens = antlr3.CommonTokenStream(lexer)
 parser = VPLParser(tokens)

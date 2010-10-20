@@ -27,27 +27,27 @@ tokens {
 * PARSER RULES
 *-----------------------------------------------------------------*/
 
-start : (function)* EOF! ;
+start : (function)* ;
 	
-function : FUNC IDENT param define statement END	;
+function : FUNC IDENT param define statements END;
 
-param: (LB list RB)? ;
+param: (LB list RB)* ;
 
 list: IDENT (COMMA IDENT)* ;
 
-define: (VAR list)+ ;
+define: (VAR list SEMICOLON)* ;
 
 statements: statement (SEMICOLON statement)* ;
 	
-statement: ((IDENT EQUAL (arithmetic)) | IDENT LB list RB);
+statement: ((IDENT EQUAL arithmetic) | IDENT LB list RB);
 	
-arithmetic :  ( atom (( MULT | DIV ) atom )* (( PLUS | MINUS ) atom ) (( MULT | DIV ) atom )*);
+arithmetic :  atom (( MULT | DIV ) atom )* (( PLUS | MINUS ) atom (( MULT | DIV ) atom )*)*;
 	
 min : MIN LB arithmetic COMMA arithmetic RB;
 
-nest : (LB arithmetic RB)+ ;
+nest : LB arithmetic RB;
 
-atom : IDENT | NUMBER | min | nest ;
+atom : (IDENT | NUMBER | min | nest) ;
 
 /*----------------------------------------------------------------
 * LEXAR RULES
@@ -67,7 +67,7 @@ FLOAT
 fragment
 	EXPONENT : ('e'|'E') (PLUS|MINUS)? NUMBER+ ;
 
-NUMBER : (DIGIT)+ ;
+NUMBER : DIGIT+ ;
 
 fragment
 	DIGIT : '0'..'9' ;

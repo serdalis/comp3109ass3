@@ -1,4 +1,4 @@
-# $ANTLR 3.1.2 VPL.g 2010-10-21 00:29:45
+# $ANTLR 3.1.2 VPL.g 2010-10-21 01:49:29
 
 import sys
 from antlr3 import *
@@ -745,7 +745,7 @@ class VPLLexer(Lexer):
 
 
                 if alt10 == 1:
-                    # VPL.g:70:11: DIGIT
+                    # VPL.g:70:10: DIGIT
                     pass 
                     self.mDIGIT()
 
