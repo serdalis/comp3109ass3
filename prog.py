@@ -4,10 +4,10 @@ from VPLLexer import VPLLexer
 from VPLParser import VPLParser
 from VPLWalker import VPLWalker
 
-char_stream = antlr3.ANTLRStringStream(...)
+char_stream = antlr3.ANTLRStringStream("sentence.grm")
 lexer = VPLLexer(char_stream)
 tokens = antlr3.CommonTokenStream(lexer)
-paser = VPLParser(tokens)
+parser = VPLParser(tokens)
 r = parser.entry_rule()
 
 root = r.tree

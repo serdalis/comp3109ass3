@@ -5,14 +5,6 @@ options {
 	output=AST;
 }
 
-@header {
-	#headers for python code in members
-}
-
-@members {
-	#python code for python code used in init and after (i assume)
-}
-
 tokens {
 	FUNC = 'func';
 	END = 'end';
