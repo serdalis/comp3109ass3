@@ -6,6 +6,7 @@ options {
 }
 
 tokens {
+	
 	FUNC = 'func';
 	END = 'end';
 	PLUS = '+';
@@ -16,7 +17,7 @@ tokens {
 	COMMA = ',';
 	LB = '(';
 	RB = ')';
-	COLEN = ';';
+	SEMICOLON = ';';
 	EQUAL = '=';
 	VAR = 'var';
 	SCORE = '_';
@@ -25,96 +26,37 @@ tokens {
 /*----------------------------------------------------------------
 * PARSER RULES
 *-----------------------------------------------------------------*/
-start 
-	: (function)* EOF!
-	;
+
+start : (function)* EOF! ;
 	
-function 
-    @init { 
-    parsed = 0; 
-    PRINTOUT = "";
-    }
-    @after { 
-    	if (parsed):
-    		#do shit    
-    }
-	: FUNC IDENT param define statment END
-	;
-param
-    @init { 
-    parsed = 0; 
-    PRINTOUT = "";
-    }
-    @after { 
-    	if (parsed):
-    		#do shit    
-    }
-	: (LB list RB)?
-	;
-list
-    @init { 
-    parsed = 0; 
-    PRINTOUT = "";
-    }
-    @after { 
-    	if (parsed):
-     		#do shit   
-    }
-	: IDENT (COMMA IDENT)*
-	;
-define
-    @init { 
-    parsed = 0; 
-    PRINTOUT = "";
-    }
-    @after { 
-    	if (parsed):
-    		#do shit    
-    }
-	: (VAR list)+
-	;
+function : FUNC IDENT param define statement END	;
+
+param: (LB list RB)? ;
+
+list: IDENT (COMMA IDENT)* ;
+
+define: (VAR list)+ ;
+
+statements: statement (SEMICOLON statement)* ;
 	
-statment
-    @init { 
-    parsed = 0; 
-    PRINTOUT = "";
-    }
-    @after { 
-    	if (parsed):
-    		#do shit
-    } 
-	: (((IDENT EQUAL (arithmatic | min | nest | atom)) | (IDENT LB list RB)) COLEN)*
-	;
+statement: ((IDENT EQUAL (arithmetic)) | IDENT LB list RB);
 	
-arithmatic 
-	: (( min | nest | atom) (PLUS | MINUS | MULT | DIV))*(min | nest | atom)
-	; 
+arithmetic :  ( atom (( MULT | DIV ) atom )* (( PLUS | MINUS ) atom ) (( MULT | DIV ) atom )*);
 	
-min     : MIN LB (arithmatic | nest | atom) COMMA (arithmatic | nest | atom) RB
-	;
-nest 
-	: (LB (arithmatic | min | atom) RB)+
-	;
-atom 
-    @init { 
-    parsed = 0; 
-    PRINTOUT = "";
-    }
-    @after { 
-    	if (parsed):
-    		#do shit    
-    } 
-	: IDENT | NUMBER
-	;
+min : MIN LB arithmetic COMMA arithmetic RB;
+
+nest : (LB arithmetic RB)+ ;
+
+atom : IDENT | NUMBER | min | nest ;
+
 /*----------------------------------------------------------------
 * LEXAR RULES
 *-----------------------------------------------------------------*/
-IDENT : (ALPHA | SCORE)(STRING)*;
 
-STRING : (ALPHA | NUMBER | SCORE)*;
+IDENT : (ALPHA|SCORE)+;
 
 fragment
-	ALPHA : ('A'..'Z' | 'a'..'z');
+	ALPHA : 'A'..'Z' | 'a'..'z';
 
 FLOAT
     :   NUMBER+ '.' NUMBER* EXPONENT?
