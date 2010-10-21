@@ -1,0 +1,10 @@
+func foo(a,b,c)
+	a = 1;
+	b = 2;
+	c = a+b;
+end
+
+func bar(y,z)
+	y = 3;
+	z = 4;
+end

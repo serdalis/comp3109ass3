@@ -1,4 +1,4 @@
-# $ANTLR 3.1.2 VPL.g 2010-10-21 01:49:29
+# $ANTLR 3.1.2 VPL.g 2010-10-21 12:16:27
 
 import sys
 from antlr3 import *
@@ -9,28 +9,32 @@ from antlr3.compat import set, frozenset
 HIDDEN = BaseRecognizer.HIDDEN
 
 # token types
-EXPONENT=21
-RB=13
-NUMBER=19
-WHITESPACE=24
-FLOAT=22
-SEMICOLON=14
-MIN=10
-MINUS=7
-MULT=8
+EXPONENT=25
+RB=17
+NUMBER=23
+WHITESPACE=28
+FLOAT=26
+SEMICOLON=18
+MIN=14
+MINUS=11
+MULT=12
 EOF=-1
-ALPHA=20
-SCORE=17
-COMMA=11
-FUNC=4
-EQUAL=15
-IDENT=18
-LB=12
-PLUS=6
-VAR=16
-DIGIT=23
-DIV=9
-END=5
+DEFINES=6
+ALPHA=24
+SCORE=21
+COMMA=15
+FUNC=8
+EQUAL=19
+BASE=4
+STATEMENTS=7
+IDENT=22
+LB=16
+PLUS=10
+VAR=20
+DIGIT=27
+DIV=13
+END=9
+PARAMS=5
 
 
 class VPLLexer(Lexer):
@@ -428,10 +432,10 @@ class VPLLexer(Lexer):
             _type = IDENT
             _channel = DEFAULT_CHANNEL
 
-            # VPL.g:56:7: ( ( ALPHA | SCORE )+ )
-            # VPL.g:56:9: ( ALPHA | SCORE )+
+            # VPL.g:63:7: ( ( ALPHA | SCORE )+ )
+            # VPL.g:63:9: ( ALPHA | SCORE )+
             pass 
-            # VPL.g:56:9: ( ALPHA | SCORE )+
+            # VPL.g:63:9: ( ALPHA | SCORE )+
             cnt1 = 0
             while True: #loop1
                 alt1 = 2
@@ -481,7 +485,7 @@ class VPLLexer(Lexer):
     def mALPHA(self, ):
 
         try:
-            # VPL.g:59:8: ( 'A' .. 'Z' | 'a' .. 'z' )
+            # VPL.g:66:8: ( 'A' .. 'Z' | 'a' .. 'z' )
             # VPL.g:
             pass 
             if (65 <= self.input.LA(1) <= 90) or (97 <= self.input.LA(1) <= 122):
@@ -510,13 +514,13 @@ class VPLLexer(Lexer):
             _type = FLOAT
             _channel = DEFAULT_CHANNEL
 
-            # VPL.g:62:5: ( ( NUMBER )+ '.' ( NUMBER )* ( EXPONENT )? | '.' ( NUMBER )+ EXPONENT | ( NUMBER )+ EXPONENT )
+            # VPL.g:69:5: ( ( NUMBER )+ '.' ( NUMBER )* ( EXPONENT )? | '.' ( NUMBER )+ EXPONENT | ( NUMBER )+ EXPONENT )
             alt7 = 3
             alt7 = self.dfa7.predict(self.input)
             if alt7 == 1:
-                # VPL.g:62:9: ( NUMBER )+ '.' ( NUMBER )* ( EXPONENT )?
+                # VPL.g:69:9: ( NUMBER )+ '.' ( NUMBER )* ( EXPONENT )?
                 pass 
-                # VPL.g:62:9: ( NUMBER )+
+                # VPL.g:69:9: ( NUMBER )+
                 cnt2 = 0
                 while True: #loop2
                     alt2 = 2
@@ -527,7 +531,7 @@ class VPLLexer(Lexer):
 
 
                     if alt2 == 1:
-                        # VPL.g:62:9: NUMBER
+                        # VPL.g:69:9: NUMBER
                         pass 
                         self.mNUMBER()
 
@@ -543,7 +547,7 @@ class VPLLexer(Lexer):
 
 
                 self.match(46)
-                # VPL.g:62:21: ( NUMBER )*
+                # VPL.g:69:21: ( NUMBER )*
                 while True: #loop3
                     alt3 = 2
                     LA3_0 = self.input.LA(1)
@@ -553,7 +557,7 @@ class VPLLexer(Lexer):
 
 
                     if alt3 == 1:
-                        # VPL.g:62:21: NUMBER
+                        # VPL.g:69:21: NUMBER
                         pass 
                         self.mNUMBER()
 
@@ -562,14 +566,14 @@ class VPLLexer(Lexer):
                         break #loop3
 
 
-                # VPL.g:62:29: ( EXPONENT )?
+                # VPL.g:69:29: ( EXPONENT )?
                 alt4 = 2
                 LA4_0 = self.input.LA(1)
 
                 if (LA4_0 == 69 or LA4_0 == 101) :
                     alt4 = 1
                 if alt4 == 1:
-                    # VPL.g:62:29: EXPONENT
+                    # VPL.g:69:29: EXPONENT
                     pass 
                     self.mEXPONENT()
 
@@ -578,10 +582,10 @@ class VPLLexer(Lexer):
 
 
             elif alt7 == 2:
-                # VPL.g:63:9: '.' ( NUMBER )+ EXPONENT
+                # VPL.g:70:9: '.' ( NUMBER )+ EXPONENT
                 pass 
                 self.match(46)
-                # VPL.g:63:13: ( NUMBER )+
+                # VPL.g:70:13: ( NUMBER )+
                 cnt5 = 0
                 while True: #loop5
                     alt5 = 2
@@ -592,7 +596,7 @@ class VPLLexer(Lexer):
 
 
                     if alt5 == 1:
-                        # VPL.g:63:13: NUMBER
+                        # VPL.g:70:13: NUMBER
                         pass 
                         self.mNUMBER()
 
@@ -611,9 +615,9 @@ class VPLLexer(Lexer):
 
 
             elif alt7 == 3:
-                # VPL.g:64:9: ( NUMBER )+ EXPONENT
+                # VPL.g:71:9: ( NUMBER )+ EXPONENT
                 pass 
-                # VPL.g:64:9: ( NUMBER )+
+                # VPL.g:71:9: ( NUMBER )+
                 cnt6 = 0
                 while True: #loop6
                     alt6 = 2
@@ -624,7 +628,7 @@ class VPLLexer(Lexer):
 
 
                     if alt6 == 1:
-                        # VPL.g:64:9: NUMBER
+                        # VPL.g:71:9: NUMBER
                         pass 
                         self.mNUMBER()
 
@@ -657,8 +661,8 @@ class VPLLexer(Lexer):
     def mEXPONENT(self, ):
 
         try:
-            # VPL.g:68:11: ( ( 'e' | 'E' ) ( PLUS | MINUS )? ( NUMBER )+ )
-            # VPL.g:68:13: ( 'e' | 'E' ) ( PLUS | MINUS )? ( NUMBER )+
+            # VPL.g:75:11: ( ( 'e' | 'E' ) ( PLUS | MINUS )? ( NUMBER )+ )
+            # VPL.g:75:13: ( 'e' | 'E' ) ( PLUS | MINUS )? ( NUMBER )+
             pass 
             if self.input.LA(1) == 69 or self.input.LA(1) == 101:
                 self.input.consume()
@@ -667,7 +671,7 @@ class VPLLexer(Lexer):
                 self.recover(mse)
                 raise mse
 
-            # VPL.g:68:23: ( PLUS | MINUS )?
+            # VPL.g:75:23: ( PLUS | MINUS )?
             alt8 = 2
             LA8_0 = self.input.LA(1)
 
@@ -686,7 +690,7 @@ class VPLLexer(Lexer):
 
 
 
-            # VPL.g:68:37: ( NUMBER )+
+            # VPL.g:75:37: ( NUMBER )+
             cnt9 = 0
             while True: #loop9
                 alt9 = 2
@@ -697,7 +701,7 @@ class VPLLexer(Lexer):
 
 
                 if alt9 == 1:
-                    # VPL.g:68:37: NUMBER
+                    # VPL.g:75:37: NUMBER
                     pass 
                     self.mNUMBER()
 
@@ -731,10 +735,10 @@ class VPLLexer(Lexer):
             _type = NUMBER
             _channel = DEFAULT_CHANNEL
 
-            # VPL.g:70:8: ( ( DIGIT )+ )
-            # VPL.g:70:10: ( DIGIT )+
+            # VPL.g:77:8: ( ( DIGIT )+ )
+            # VPL.g:77:10: ( DIGIT )+
             pass 
-            # VPL.g:70:10: ( DIGIT )+
+            # VPL.g:77:10: ( DIGIT )+
             cnt10 = 0
             while True: #loop10
                 alt10 = 2
@@ -745,7 +749,7 @@ class VPLLexer(Lexer):
 
 
                 if alt10 == 1:
-                    # VPL.g:70:10: DIGIT
+                    # VPL.g:77:10: DIGIT
                     pass 
                     self.mDIGIT()
 
@@ -778,8 +782,8 @@ class VPLLexer(Lexer):
     def mDIGIT(self, ):
 
         try:
-            # VPL.g:73:8: ( '0' .. '9' )
-            # VPL.g:73:10: '0' .. '9'
+            # VPL.g:80:8: ( '0' .. '9' )
+            # VPL.g:80:10: '0' .. '9'
             pass 
             self.matchRange(48, 57)
 
@@ -801,10 +805,10 @@ class VPLLexer(Lexer):
             _type = WHITESPACE
             _channel = DEFAULT_CHANNEL
 
-            # VPL.g:75:12: ( ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+ )
-            # VPL.g:75:14: ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+
+            # VPL.g:82:12: ( ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+ )
+            # VPL.g:82:14: ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+
             pass 
-            # VPL.g:75:14: ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+
+            # VPL.g:82:14: ( '\\t' | ' ' | '\\r' | '\\n' | '\\u000C' )+
             cnt11 = 0
             while True: #loop11
                 alt11 = 2

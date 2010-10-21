@@ -1,4 +1,4 @@
-# $ANTLR 3.1.2 VPL.g 2010-10-21 01:49:28
+# $ANTLR 3.1.2 VPL.g 2010-10-21 12:16:27
 
 import sys
 from antlr3 import *
@@ -12,35 +12,39 @@ from antlr3.tree import *
 HIDDEN = BaseRecognizer.HIDDEN
 
 # token types
-EXPONENT=21
-RB=13
-NUMBER=19
-WHITESPACE=24
-FLOAT=22
-SEMICOLON=14
-MIN=10
-MINUS=7
-MULT=8
+EXPONENT=25
+RB=17
+NUMBER=23
+WHITESPACE=28
+FLOAT=26
+SEMICOLON=18
+MIN=14
+MINUS=11
+MULT=12
 EOF=-1
-ALPHA=20
-SCORE=17
-COMMA=11
-FUNC=4
-EQUAL=15
-IDENT=18
-PLUS=6
-LB=12
-VAR=16
-DIGIT=23
-DIV=9
-END=5
+DEFINES=6
+ALPHA=24
+SCORE=21
+COMMA=15
+FUNC=8
+EQUAL=19
+IDENT=22
+STATEMENTS=7
+BASE=4
+PLUS=10
+LB=16
+VAR=20
+DIGIT=27
+DIV=13
+END=9
+PARAMS=5
 
 # token names
 tokenNames = [
     "<invalid>", "<EOR>", "<DOWN>", "<UP>", 
-    "FUNC", "END", "PLUS", "MINUS", "MULT", "DIV", "MIN", "COMMA", "LB", 
-    "RB", "SEMICOLON", "EQUAL", "VAR", "SCORE", "IDENT", "NUMBER", "ALPHA", 
-    "EXPONENT", "FLOAT", "DIGIT", "WHITESPACE"
+    "BASE", "PARAMS", "DEFINES", "STATEMENTS", "FUNC", "END", "PLUS", "MINUS", 
+    "MULT", "DIV", "MIN", "COMMA", "LB", "RB", "SEMICOLON", "EQUAL", "VAR", 
+    "SCORE", "IDENT", "NUMBER", "ALPHA", "EXPONENT", "FLOAT", "DIGIT", "WHITESPACE"
 ]
 
 
@@ -88,7 +92,7 @@ class VPLParser(Parser):
 
 
     # $ANTLR start "start"
-    # VPL.g:30:1: start : ( function )* ;
+    # VPL.g:35:1: start : ( function )* -> ^( BASE ( function )* ) ;
     def start(self, ):
 
         retval = self.start_return()
@@ -99,15 +103,13 @@ class VPLParser(Parser):
         function1 = None
 
 
-
+        stream_function = RewriteRuleSubtreeStream(self._adaptor, "rule function")
         try:
             try:
-                # VPL.g:30:7: ( ( function )* )
-                # VPL.g:30:9: ( function )*
+                # VPL.g:35:7: ( ( function )* -> ^( BASE ( function )* ) )
+                # VPL.g:35:9: ( function )*
                 pass 
-                root_0 = self._adaptor.nil()
-
-                # VPL.g:30:9: ( function )*
+                # VPL.g:35:9: ( function )*
                 while True: #loop1
                     alt1 = 2
                     LA1_0 = self.input.LA(1)
@@ -117,19 +119,54 @@ class VPLParser(Parser):
 
 
                     if alt1 == 1:
-                        # VPL.g:30:10: function
+                        # VPL.g:35:10: function
                         pass 
-                        self._state.following.append(self.FOLLOW_function_in_start151)
+                        self._state.following.append(self.FOLLOW_function_in_start168)
                         function1 = self.function()
 
                         self._state.following.pop()
-                        self._adaptor.addChild(root_0, function1.tree)
+                        stream_function.add(function1.tree)
 
 
                     else:
                         break #loop1
 
 
+
+                # AST Rewrite
+                # elements: function
+                # token labels: 
+                # rule labels: retval
+                # token list labels: 
+                # rule list labels: 
+                # wildcard labels: 
+
+                retval.tree = root_0
+
+                if retval is not None:
+                    stream_retval = RewriteRuleSubtreeStream(self._adaptor, "rule retval", retval.tree)
+                else:
+                    stream_retval = RewriteRuleSubtreeStream(self._adaptor, "token retval", None)
+
+
+                root_0 = self._adaptor.nil()
+                # 35:21: -> ^( BASE ( function )* )
+                # VPL.g:35:24: ^( BASE ( function )* )
+                root_1 = self._adaptor.nil()
+                root_1 = self._adaptor.becomeRoot(self._adaptor.createFromType(BASE, "BASE"), root_1)
+
+                # VPL.g:35:31: ( function )*
+                while stream_function.hasNext():
+                    self._adaptor.addChild(root_1, stream_function.nextTree())
+
+
+                stream_function.reset();
+
+                self._adaptor.addChild(root_0, root_1)
+
+
+
+                retval.tree = root_0
 
 
 
@@ -162,7 +199,7 @@ class VPLParser(Parser):
 
 
     # $ANTLR start "function"
-    # VPL.g:32:1: function : FUNC IDENT param define statements END ;
+    # VPL.g:37:1: function : FUNC IDENT param define statements END ;
     def function(self, ):
 
         retval = self.function_return()
@@ -186,41 +223,33 @@ class VPLParser(Parser):
 
         try:
             try:
-                # VPL.g:32:10: ( FUNC IDENT param define statements END )
-                # VPL.g:32:12: FUNC IDENT param define statements END
+                # VPL.g:37:10: ( FUNC IDENT param define statements END )
+                # VPL.g:37:12: FUNC IDENT param define statements END
                 pass 
                 root_0 = self._adaptor.nil()
 
-                FUNC2=self.match(self.input, FUNC, self.FOLLOW_FUNC_in_function163)
-
-                FUNC2_tree = self._adaptor.createWithPayload(FUNC2)
-                self._adaptor.addChild(root_0, FUNC2_tree)
-
-                IDENT3=self.match(self.input, IDENT, self.FOLLOW_IDENT_in_function165)
+                FUNC2=self.match(self.input, FUNC, self.FOLLOW_FUNC_in_function188)
+                IDENT3=self.match(self.input, IDENT, self.FOLLOW_IDENT_in_function191)
 
                 IDENT3_tree = self._adaptor.createWithPayload(IDENT3)
-                self._adaptor.addChild(root_0, IDENT3_tree)
+                root_0 = self._adaptor.becomeRoot(IDENT3_tree, root_0)
 
-                self._state.following.append(self.FOLLOW_param_in_function167)
+                self._state.following.append(self.FOLLOW_param_in_function194)
                 param4 = self.param()
 
                 self._state.following.pop()
                 self._adaptor.addChild(root_0, param4.tree)
-                self._state.following.append(self.FOLLOW_define_in_function169)
+                self._state.following.append(self.FOLLOW_define_in_function196)
                 define5 = self.define()
 
                 self._state.following.pop()
                 self._adaptor.addChild(root_0, define5.tree)
-                self._state.following.append(self.FOLLOW_statements_in_function171)
+                self._state.following.append(self.FOLLOW_statements_in_function198)
                 statements6 = self.statements()
 
                 self._state.following.pop()
                 self._adaptor.addChild(root_0, statements6.tree)
-                END7=self.match(self.input, END, self.FOLLOW_END_in_function173)
-
-                END7_tree = self._adaptor.createWithPayload(END7)
-                self._adaptor.addChild(root_0, END7_tree)
-
+                END7=self.match(self.input, END, self.FOLLOW_END_in_function200)
 
 
 
@@ -253,7 +282,7 @@ class VPLParser(Parser):
 
 
     # $ANTLR start "param"
-    # VPL.g:34:1: param : ( LB list RB )* ;
+    # VPL.g:39:1: param : ( LB list RB )? -> ^( PARAMS list ) ;
     def param(self, ):
 
         retval = self.param_return()
@@ -268,47 +297,65 @@ class VPLParser(Parser):
 
         LB8_tree = None
         RB10_tree = None
-
+        stream_LB = RewriteRuleTokenStream(self._adaptor, "token LB")
+        stream_RB = RewriteRuleTokenStream(self._adaptor, "token RB")
+        stream_list = RewriteRuleSubtreeStream(self._adaptor, "rule list")
         try:
             try:
-                # VPL.g:34:6: ( ( LB list RB )* )
-                # VPL.g:34:8: ( LB list RB )*
+                # VPL.g:39:6: ( ( LB list RB )? -> ^( PARAMS list ) )
+                # VPL.g:39:8: ( LB list RB )?
                 pass 
+                # VPL.g:39:8: ( LB list RB )?
+                alt2 = 2
+                LA2_0 = self.input.LA(1)
+
+                if (LA2_0 == LB) :
+                    alt2 = 1
+                if alt2 == 1:
+                    # VPL.g:39:9: LB list RB
+                    pass 
+                    LB8=self.match(self.input, LB, self.FOLLOW_LB_in_param209) 
+                    stream_LB.add(LB8)
+                    self._state.following.append(self.FOLLOW_list_in_param211)
+                    list9 = self.list()
+
+                    self._state.following.pop()
+                    stream_list.add(list9.tree)
+                    RB10=self.match(self.input, RB, self.FOLLOW_RB_in_param213) 
+                    stream_RB.add(RB10)
+
+
+
+
+                # AST Rewrite
+                # elements: list
+                # token labels: 
+                # rule labels: retval
+                # token list labels: 
+                # rule list labels: 
+                # wildcard labels: 
+
+                retval.tree = root_0
+
+                if retval is not None:
+                    stream_retval = RewriteRuleSubtreeStream(self._adaptor, "rule retval", retval.tree)
+                else:
+                    stream_retval = RewriteRuleSubtreeStream(self._adaptor, "token retval", None)
+
+
                 root_0 = self._adaptor.nil()
+                # 39:22: -> ^( PARAMS list )
+                # VPL.g:39:25: ^( PARAMS list )
+                root_1 = self._adaptor.nil()
+                root_1 = self._adaptor.becomeRoot(self._adaptor.createFromType(PARAMS, "PARAMS"), root_1)
 
-                # VPL.g:34:8: ( LB list RB )*
-                while True: #loop2
-                    alt2 = 2
-                    LA2_0 = self.input.LA(1)
+                self._adaptor.addChild(root_1, stream_list.nextTree())
 
-                    if (LA2_0 == LB) :
-                        alt2 = 1
-
-
-                    if alt2 == 1:
-                        # VPL.g:34:9: LB list RB
-                        pass 
-                        LB8=self.match(self.input, LB, self.FOLLOW_LB_in_param181)
-
-                        LB8_tree = self._adaptor.createWithPayload(LB8)
-                        self._adaptor.addChild(root_0, LB8_tree)
-
-                        self._state.following.append(self.FOLLOW_list_in_param183)
-                        list9 = self.list()
-
-                        self._state.following.pop()
-                        self._adaptor.addChild(root_0, list9.tree)
-                        RB10=self.match(self.input, RB, self.FOLLOW_RB_in_param185)
-
-                        RB10_tree = self._adaptor.createWithPayload(RB10)
-                        self._adaptor.addChild(root_0, RB10_tree)
+                self._adaptor.addChild(root_0, root_1)
 
 
 
-                    else:
-                        break #loop2
-
-
+                retval.tree = root_0
 
 
 
@@ -341,7 +388,7 @@ class VPLParser(Parser):
 
 
     # $ANTLR start "list"
-    # VPL.g:36:1: list : IDENT ( COMMA IDENT )* ;
+    # VPL.g:41:1: list : IDENT ( COMMA IDENT )* ;
     def list(self, ):
 
         retval = self.list_return()
@@ -359,17 +406,17 @@ class VPLParser(Parser):
 
         try:
             try:
-                # VPL.g:36:5: ( IDENT ( COMMA IDENT )* )
-                # VPL.g:36:7: IDENT ( COMMA IDENT )*
+                # VPL.g:41:5: ( IDENT ( COMMA IDENT )* )
+                # VPL.g:41:7: IDENT ( COMMA IDENT )*
                 pass 
                 root_0 = self._adaptor.nil()
 
-                IDENT11=self.match(self.input, IDENT, self.FOLLOW_IDENT_in_list195)
+                IDENT11=self.match(self.input, IDENT, self.FOLLOW_IDENT_in_list230)
 
                 IDENT11_tree = self._adaptor.createWithPayload(IDENT11)
                 self._adaptor.addChild(root_0, IDENT11_tree)
 
-                # VPL.g:36:13: ( COMMA IDENT )*
+                # VPL.g:41:13: ( COMMA IDENT )*
                 while True: #loop3
                     alt3 = 2
                     LA3_0 = self.input.LA(1)
@@ -379,14 +426,10 @@ class VPLParser(Parser):
 
 
                     if alt3 == 1:
-                        # VPL.g:36:14: COMMA IDENT
+                        # VPL.g:41:14: COMMA IDENT
                         pass 
-                        COMMA12=self.match(self.input, COMMA, self.FOLLOW_COMMA_in_list198)
-
-                        COMMA12_tree = self._adaptor.createWithPayload(COMMA12)
-                        self._adaptor.addChild(root_0, COMMA12_tree)
-
-                        IDENT13=self.match(self.input, IDENT, self.FOLLOW_IDENT_in_list200)
+                        COMMA12=self.match(self.input, COMMA, self.FOLLOW_COMMA_in_list233)
+                        IDENT13=self.match(self.input, IDENT, self.FOLLOW_IDENT_in_list236)
 
                         IDENT13_tree = self._adaptor.createWithPayload(IDENT13)
                         self._adaptor.addChild(root_0, IDENT13_tree)
@@ -429,7 +472,7 @@ class VPLParser(Parser):
 
 
     # $ANTLR start "define"
-    # VPL.g:38:1: define : ( VAR list SEMICOLON )* ;
+    # VPL.g:43:1: define : ( VAR list SEMICOLON )? -> ^( DEFINES ( list )? ) ;
     def define(self, ):
 
         retval = self.define_return()
@@ -444,47 +487,70 @@ class VPLParser(Parser):
 
         VAR14_tree = None
         SEMICOLON16_tree = None
-
+        stream_VAR = RewriteRuleTokenStream(self._adaptor, "token VAR")
+        stream_SEMICOLON = RewriteRuleTokenStream(self._adaptor, "token SEMICOLON")
+        stream_list = RewriteRuleSubtreeStream(self._adaptor, "rule list")
         try:
             try:
-                # VPL.g:38:7: ( ( VAR list SEMICOLON )* )
-                # VPL.g:38:9: ( VAR list SEMICOLON )*
+                # VPL.g:43:7: ( ( VAR list SEMICOLON )? -> ^( DEFINES ( list )? ) )
+                # VPL.g:43:9: ( VAR list SEMICOLON )?
                 pass 
+                # VPL.g:43:9: ( VAR list SEMICOLON )?
+                alt4 = 2
+                LA4_0 = self.input.LA(1)
+
+                if (LA4_0 == VAR) :
+                    alt4 = 1
+                if alt4 == 1:
+                    # VPL.g:43:10: VAR list SEMICOLON
+                    pass 
+                    VAR14=self.match(self.input, VAR, self.FOLLOW_VAR_in_define247) 
+                    stream_VAR.add(VAR14)
+                    self._state.following.append(self.FOLLOW_list_in_define249)
+                    list15 = self.list()
+
+                    self._state.following.pop()
+                    stream_list.add(list15.tree)
+                    SEMICOLON16=self.match(self.input, SEMICOLON, self.FOLLOW_SEMICOLON_in_define251) 
+                    stream_SEMICOLON.add(SEMICOLON16)
+
+
+
+
+                # AST Rewrite
+                # elements: list
+                # token labels: 
+                # rule labels: retval
+                # token list labels: 
+                # rule list labels: 
+                # wildcard labels: 
+
+                retval.tree = root_0
+
+                if retval is not None:
+                    stream_retval = RewriteRuleSubtreeStream(self._adaptor, "rule retval", retval.tree)
+                else:
+                    stream_retval = RewriteRuleSubtreeStream(self._adaptor, "token retval", None)
+
+
                 root_0 = self._adaptor.nil()
+                # 43:31: -> ^( DEFINES ( list )? )
+                # VPL.g:43:34: ^( DEFINES ( list )? )
+                root_1 = self._adaptor.nil()
+                root_1 = self._adaptor.becomeRoot(self._adaptor.createFromType(DEFINES, "DEFINES"), root_1)
 
-                # VPL.g:38:9: ( VAR list SEMICOLON )*
-                while True: #loop4
-                    alt4 = 2
-                    LA4_0 = self.input.LA(1)
-
-                    if (LA4_0 == VAR) :
-                        alt4 = 1
+                # VPL.g:43:44: ( list )?
+                if stream_list.hasNext():
+                    self._adaptor.addChild(root_1, stream_list.nextTree())
 
 
-                    if alt4 == 1:
-                        # VPL.g:38:10: VAR list SEMICOLON
-                        pass 
-                        VAR14=self.match(self.input, VAR, self.FOLLOW_VAR_in_define211)
+                stream_list.reset();
 
-                        VAR14_tree = self._adaptor.createWithPayload(VAR14)
-                        self._adaptor.addChild(root_0, VAR14_tree)
-
-                        self._state.following.append(self.FOLLOW_list_in_define213)
-                        list15 = self.list()
-
-                        self._state.following.pop()
-                        self._adaptor.addChild(root_0, list15.tree)
-                        SEMICOLON16=self.match(self.input, SEMICOLON, self.FOLLOW_SEMICOLON_in_define215)
-
-                        SEMICOLON16_tree = self._adaptor.createWithPayload(SEMICOLON16)
-                        self._adaptor.addChild(root_0, SEMICOLON16_tree)
+                self._adaptor.addChild(root_0, root_1)
 
 
 
-                    else:
-                        break #loop4
-
-
+                retval.tree = root_0
 
 
 
@@ -517,7 +583,7 @@ class VPLParser(Parser):
 
 
     # $ANTLR start "statements"
-    # VPL.g:40:1: statements : statement ( SEMICOLON statement )* ;
+    # VPL.g:45:1: statements : statement ( SEMICOLON statement )* -> ^( STATEMENTS ( statement )* ) ;
     def statements(self, ):
 
         retval = self.statements_return()
@@ -532,20 +598,19 @@ class VPLParser(Parser):
 
 
         SEMICOLON18_tree = None
-
+        stream_SEMICOLON = RewriteRuleTokenStream(self._adaptor, "token SEMICOLON")
+        stream_statement = RewriteRuleSubtreeStream(self._adaptor, "rule statement")
         try:
             try:
-                # VPL.g:40:11: ( statement ( SEMICOLON statement )* )
-                # VPL.g:40:13: statement ( SEMICOLON statement )*
+                # VPL.g:45:11: ( statement ( SEMICOLON statement )* -> ^( STATEMENTS ( statement )* ) )
+                # VPL.g:45:13: statement ( SEMICOLON statement )*
                 pass 
-                root_0 = self._adaptor.nil()
-
-                self._state.following.append(self.FOLLOW_statement_in_statements225)
+                self._state.following.append(self.FOLLOW_statement_in_statements269)
                 statement17 = self.statement()
 
                 self._state.following.pop()
-                self._adaptor.addChild(root_0, statement17.tree)
-                # VPL.g:40:23: ( SEMICOLON statement )*
+                stream_statement.add(statement17.tree)
+                # VPL.g:45:23: ( SEMICOLON statement )*
                 while True: #loop5
                     alt5 = 2
                     LA5_0 = self.input.LA(1)
@@ -555,24 +620,56 @@ class VPLParser(Parser):
 
 
                     if alt5 == 1:
-                        # VPL.g:40:24: SEMICOLON statement
+                        # VPL.g:45:24: SEMICOLON statement
                         pass 
-                        SEMICOLON18=self.match(self.input, SEMICOLON, self.FOLLOW_SEMICOLON_in_statements228)
-
-                        SEMICOLON18_tree = self._adaptor.createWithPayload(SEMICOLON18)
-                        self._adaptor.addChild(root_0, SEMICOLON18_tree)
-
-                        self._state.following.append(self.FOLLOW_statement_in_statements230)
+                        SEMICOLON18=self.match(self.input, SEMICOLON, self.FOLLOW_SEMICOLON_in_statements272) 
+                        stream_SEMICOLON.add(SEMICOLON18)
+                        self._state.following.append(self.FOLLOW_statement_in_statements274)
                         statement19 = self.statement()
 
                         self._state.following.pop()
-                        self._adaptor.addChild(root_0, statement19.tree)
+                        stream_statement.add(statement19.tree)
 
 
                     else:
                         break #loop5
 
 
+
+                # AST Rewrite
+                # elements: statement
+                # token labels: 
+                # rule labels: retval
+                # token list labels: 
+                # rule list labels: 
+                # wildcard labels: 
+
+                retval.tree = root_0
+
+                if retval is not None:
+                    stream_retval = RewriteRuleSubtreeStream(self._adaptor, "rule retval", retval.tree)
+                else:
+                    stream_retval = RewriteRuleSubtreeStream(self._adaptor, "token retval", None)
+
+
+                root_0 = self._adaptor.nil()
+                # 45:46: -> ^( STATEMENTS ( statement )* )
+                # VPL.g:45:49: ^( STATEMENTS ( statement )* )
+                root_1 = self._adaptor.nil()
+                root_1 = self._adaptor.becomeRoot(self._adaptor.createFromType(STATEMENTS, "STATEMENTS"), root_1)
+
+                # VPL.g:45:62: ( statement )*
+                while stream_statement.hasNext():
+                    self._adaptor.addChild(root_1, stream_statement.nextTree())
+
+
+                stream_statement.reset();
+
+                self._adaptor.addChild(root_0, root_1)
+
+
+
+                retval.tree = root_0
 
 
 
@@ -605,7 +702,7 @@ class VPLParser(Parser):
 
 
     # $ANTLR start "statement"
-    # VPL.g:42:1: statement : ( ( IDENT EQUAL arithmetic ) | IDENT LB list RB ) ;
+    # VPL.g:47:1: statement : ( ( IDENT EQUAL e )? | IDENT LB list RB ) ;
     def statement(self, ):
 
         retval = self.statement_return()
@@ -618,7 +715,7 @@ class VPLParser(Parser):
         IDENT23 = None
         LB24 = None
         RB26 = None
-        arithmetic22 = None
+        e22 = None
 
         list25 = None
 
@@ -631,81 +728,81 @@ class VPLParser(Parser):
 
         try:
             try:
-                # VPL.g:42:10: ( ( ( IDENT EQUAL arithmetic ) | IDENT LB list RB ) )
-                # VPL.g:42:12: ( ( IDENT EQUAL arithmetic ) | IDENT LB list RB )
+                # VPL.g:47:10: ( ( ( IDENT EQUAL e )? | IDENT LB list RB ) )
+                # VPL.g:47:12: ( ( IDENT EQUAL e )? | IDENT LB list RB )
                 pass 
                 root_0 = self._adaptor.nil()
 
-                # VPL.g:42:12: ( ( IDENT EQUAL arithmetic ) | IDENT LB list RB )
-                alt6 = 2
-                LA6_0 = self.input.LA(1)
+                # VPL.g:47:12: ( ( IDENT EQUAL e )? | IDENT LB list RB )
+                alt7 = 2
+                LA7_0 = self.input.LA(1)
 
-                if (LA6_0 == IDENT) :
-                    LA6_1 = self.input.LA(2)
+                if (LA7_0 == IDENT) :
+                    LA7_1 = self.input.LA(2)
 
-                    if (LA6_1 == EQUAL) :
-                        alt6 = 1
-                    elif (LA6_1 == LB) :
-                        alt6 = 2
+                    if (LA7_1 == EQUAL) :
+                        alt7 = 1
+                    elif (LA7_1 == LB) :
+                        alt7 = 2
                     else:
-                        nvae = NoViableAltException("", 6, 1, self.input)
+                        nvae = NoViableAltException("", 7, 1, self.input)
 
                         raise nvae
 
+                elif (LA7_0 == END or LA7_0 == SEMICOLON) :
+                    alt7 = 1
                 else:
-                    nvae = NoViableAltException("", 6, 0, self.input)
+                    nvae = NoViableAltException("", 7, 0, self.input)
 
                     raise nvae
 
-                if alt6 == 1:
-                    # VPL.g:42:13: ( IDENT EQUAL arithmetic )
+                if alt7 == 1:
+                    # VPL.g:47:13: ( IDENT EQUAL e )?
                     pass 
-                    # VPL.g:42:13: ( IDENT EQUAL arithmetic )
-                    # VPL.g:42:14: IDENT EQUAL arithmetic
+                    # VPL.g:47:13: ( IDENT EQUAL e )?
+                    alt6 = 2
+                    LA6_0 = self.input.LA(1)
+
+                    if (LA6_0 == IDENT) :
+                        alt6 = 1
+                    if alt6 == 1:
+                        # VPL.g:47:14: IDENT EQUAL e
+                        pass 
+                        IDENT20=self.match(self.input, IDENT, self.FOLLOW_IDENT_in_statement295)
+
+                        IDENT20_tree = self._adaptor.createWithPayload(IDENT20)
+                        self._adaptor.addChild(root_0, IDENT20_tree)
+
+                        EQUAL21=self.match(self.input, EQUAL, self.FOLLOW_EQUAL_in_statement297)
+
+                        EQUAL21_tree = self._adaptor.createWithPayload(EQUAL21)
+                        root_0 = self._adaptor.becomeRoot(EQUAL21_tree, root_0)
+
+                        self._state.following.append(self.FOLLOW_e_in_statement300)
+                        e22 = self.e()
+
+                        self._state.following.pop()
+                        self._adaptor.addChild(root_0, e22.tree)
+
+
+
+
+
+                elif alt7 == 2:
+                    # VPL.g:47:33: IDENT LB list RB
                     pass 
-                    IDENT20=self.match(self.input, IDENT, self.FOLLOW_IDENT_in_statement243)
-
-                    IDENT20_tree = self._adaptor.createWithPayload(IDENT20)
-                    self._adaptor.addChild(root_0, IDENT20_tree)
-
-                    EQUAL21=self.match(self.input, EQUAL, self.FOLLOW_EQUAL_in_statement245)
-
-                    EQUAL21_tree = self._adaptor.createWithPayload(EQUAL21)
-                    self._adaptor.addChild(root_0, EQUAL21_tree)
-
-                    self._state.following.append(self.FOLLOW_arithmetic_in_statement247)
-                    arithmetic22 = self.arithmetic()
-
-                    self._state.following.pop()
-                    self._adaptor.addChild(root_0, arithmetic22.tree)
-
-
-
-
-
-                elif alt6 == 2:
-                    # VPL.g:42:40: IDENT LB list RB
-                    pass 
-                    IDENT23=self.match(self.input, IDENT, self.FOLLOW_IDENT_in_statement252)
+                    IDENT23=self.match(self.input, IDENT, self.FOLLOW_IDENT_in_statement306)
 
                     IDENT23_tree = self._adaptor.createWithPayload(IDENT23)
-                    self._adaptor.addChild(root_0, IDENT23_tree)
+                    root_0 = self._adaptor.becomeRoot(IDENT23_tree, root_0)
 
-                    LB24=self.match(self.input, LB, self.FOLLOW_LB_in_statement254)
-
-                    LB24_tree = self._adaptor.createWithPayload(LB24)
-                    self._adaptor.addChild(root_0, LB24_tree)
-
-                    self._state.following.append(self.FOLLOW_list_in_statement256)
+                    LB24=self.match(self.input, LB, self.FOLLOW_LB_in_statement309)
+                    self._state.following.append(self.FOLLOW_list_in_statement312)
                     list25 = self.list()
 
                     self._state.following.pop()
                     self._adaptor.addChild(root_0, list25.tree)
-                    RB26=self.match(self.input, RB, self.FOLLOW_RB_in_statement258)
-
-                    RB26_tree = self._adaptor.createWithPayload(RB26)
-                    self._adaptor.addChild(root_0, RB26_tree)
-
+                    RB26=self.match(self.input, RB, self.FOLLOW_RB_in_statement314)
 
 
 
@@ -731,7 +828,7 @@ class VPLParser(Parser):
 
     # $ANTLR end "statement"
 
-    class arithmetic_return(ParserRuleReturnScope):
+    class e_return(ParserRuleReturnScope):
         def __init__(self):
             ParserRuleReturnScope.__init__(self)
 
@@ -740,59 +837,52 @@ class VPLParser(Parser):
 
 
 
-    # $ANTLR start "arithmetic"
-    # VPL.g:44:1: arithmetic : atom ( ( MULT | DIV ) atom )* ( ( PLUS | MINUS ) atom ( ( MULT | DIV ) atom )* )* ;
-    def arithmetic(self, ):
+    # $ANTLR start "e"
+    # VPL.g:49:1: e : e2 ( ( PLUS | MINUS ) e2 )* ;
+    def e(self, ):
 
-        retval = self.arithmetic_return()
+        retval = self.e_return()
         retval.start = self.input.LT(1)
 
         root_0 = None
 
         set28 = None
-        set30 = None
-        set32 = None
-        atom27 = None
+        e227 = None
 
-        atom29 = None
-
-        atom31 = None
-
-        atom33 = None
+        e229 = None
 
 
         set28_tree = None
-        set30_tree = None
-        set32_tree = None
 
         try:
             try:
-                # VPL.g:44:12: ( atom ( ( MULT | DIV ) atom )* ( ( PLUS | MINUS ) atom ( ( MULT | DIV ) atom )* )* )
-                # VPL.g:44:15: atom ( ( MULT | DIV ) atom )* ( ( PLUS | MINUS ) atom ( ( MULT | DIV ) atom )* )*
+                # VPL.g:49:2: ( e2 ( ( PLUS | MINUS ) e2 )* )
+                # VPL.g:49:4: e2 ( ( PLUS | MINUS ) e2 )*
                 pass 
                 root_0 = self._adaptor.nil()
 
-                self._state.following.append(self.FOLLOW_atom_in_arithmetic269)
-                atom27 = self.atom()
+                self._state.following.append(self.FOLLOW_e2_in_e324)
+                e227 = self.e2()
 
                 self._state.following.pop()
-                self._adaptor.addChild(root_0, atom27.tree)
-                # VPL.g:44:20: ( ( MULT | DIV ) atom )*
-                while True: #loop7
-                    alt7 = 2
-                    LA7_0 = self.input.LA(1)
+                self._adaptor.addChild(root_0, e227.tree)
+                # VPL.g:49:6: ( ( PLUS | MINUS ) e2 )*
+                while True: #loop8
+                    alt8 = 2
+                    LA8_0 = self.input.LA(1)
 
-                    if ((MULT <= LA7_0 <= DIV)) :
-                        alt7 = 1
+                    if ((PLUS <= LA8_0 <= MINUS)) :
+                        alt8 = 1
 
 
-                    if alt7 == 1:
-                        # VPL.g:44:21: ( MULT | DIV ) atom
+                    if alt8 == 1:
+                        # VPL.g:49:7: ( PLUS | MINUS ) e2
                         pass 
                         set28 = self.input.LT(1)
-                        if (MULT <= self.input.LA(1) <= DIV):
+                        set28 = self.input.LT(1)
+                        if (PLUS <= self.input.LA(1) <= MINUS):
                             self.input.consume()
-                            self._adaptor.addChild(root_0, self._adaptor.createWithPayload(set28))
+                            root_0 = self._adaptor.becomeRoot(self._adaptor.createWithPayload(set28), root_0)
                             self._state.errorRecovery = False
 
                         else:
@@ -800,33 +890,94 @@ class VPLParser(Parser):
                             raise mse
 
 
-                        self._state.following.append(self.FOLLOW_atom_in_arithmetic282)
-                        atom29 = self.atom()
+                        self._state.following.append(self.FOLLOW_e2_in_e333)
+                        e229 = self.e2()
 
                         self._state.following.pop()
-                        self._adaptor.addChild(root_0, atom29.tree)
+                        self._adaptor.addChild(root_0, e229.tree)
 
 
                     else:
-                        break #loop7
+                        break #loop8
 
 
-                # VPL.g:44:44: ( ( PLUS | MINUS ) atom ( ( MULT | DIV ) atom )* )*
+
+
+
+                retval.stop = self.input.LT(-1)
+
+
+                retval.tree = self._adaptor.rulePostProcessing(root_0)
+                self._adaptor.setTokenBoundaries(retval.tree, retval.start, retval.stop)
+
+
+            except RecognitionException, re:
+                self.reportError(re)
+                self.recover(self.input, re)
+                retval.tree = self._adaptor.errorNode(self.input, retval.start, self.input.LT(-1), re)
+        finally:
+
+            pass
+
+        return retval
+
+    # $ANTLR end "e"
+
+    class e2_return(ParserRuleReturnScope):
+        def __init__(self):
+            ParserRuleReturnScope.__init__(self)
+
+            self.tree = None
+
+
+
+
+    # $ANTLR start "e2"
+    # VPL.g:51:1: e2 : e3 ( ( MULT | DIV ) e3 )* ;
+    def e2(self, ):
+
+        retval = self.e2_return()
+        retval.start = self.input.LT(1)
+
+        root_0 = None
+
+        set31 = None
+        e330 = None
+
+        e332 = None
+
+
+        set31_tree = None
+
+        try:
+            try:
+                # VPL.g:51:3: ( e3 ( ( MULT | DIV ) e3 )* )
+                # VPL.g:51:5: e3 ( ( MULT | DIV ) e3 )*
+                pass 
+                root_0 = self._adaptor.nil()
+
+                self._state.following.append(self.FOLLOW_e3_in_e2342)
+                e330 = self.e3()
+
+                self._state.following.pop()
+                self._adaptor.addChild(root_0, e330.tree)
+                # VPL.g:51:7: ( ( MULT | DIV ) e3 )*
                 while True: #loop9
                     alt9 = 2
                     LA9_0 = self.input.LA(1)
 
-                    if ((PLUS <= LA9_0 <= MINUS)) :
+                    if ((MULT <= LA9_0 <= DIV)) :
                         alt9 = 1
 
 
                     if alt9 == 1:
-                        # VPL.g:44:45: ( PLUS | MINUS ) atom ( ( MULT | DIV ) atom )*
+                        # VPL.g:51:8: ( MULT | DIV ) e3
                         pass 
-                        set30 = self.input.LT(1)
-                        if (PLUS <= self.input.LA(1) <= MINUS):
+                        set31 = self.input.LT(1)
+                        set31 = self.input.LT(1)
+                        if (MULT <= self.input.LA(1) <= DIV):
                             self.input.consume()
-                            self._adaptor.addChild(root_0, self._adaptor.createWithPayload(set30))
+                            root_0 = self._adaptor.becomeRoot(self._adaptor.createWithPayload(set31), root_0)
                             self._state.errorRecovery = False
 
                         else:
@@ -834,45 +985,11 @@ class VPLParser(Parser):
                             raise mse
 
 
-                        self._state.following.append(self.FOLLOW_atom_in_arithmetic298)
-                        atom31 = self.atom()
+                        self._state.following.append(self.FOLLOW_e3_in_e2351)
+                        e332 = self.e3()
 
                         self._state.following.pop()
-                        self._adaptor.addChild(root_0, atom31.tree)
-                        # VPL.g:44:67: ( ( MULT | DIV ) atom )*
-                        while True: #loop8
-                            alt8 = 2
-                            LA8_0 = self.input.LA(1)
-
-                            if ((MULT <= LA8_0 <= DIV)) :
-                                alt8 = 1
-
-
-                            if alt8 == 1:
-                                # VPL.g:44:68: ( MULT | DIV ) atom
-                                pass 
-                                set32 = self.input.LT(1)
-                                if (MULT <= self.input.LA(1) <= DIV):
-                                    self.input.consume()
-                                    self._adaptor.addChild(root_0, self._adaptor.createWithPayload(set32))
-                                    self._state.errorRecovery = False
-
-                                else:
-                                    mse = MismatchedSetException(None, self.input)
-                                    raise mse
-
-
-                                self._state.following.append(self.FOLLOW_atom_in_arithmetic311)
-                                atom33 = self.atom()
-
-                                self._state.following.pop()
-                                self._adaptor.addChild(root_0, atom33.tree)
-
-
-                            else:
-                                break #loop8
-
-
+                        self._adaptor.addChild(root_0, e332.tree)
 
 
                     else:
@@ -899,7 +1016,7 @@ class VPLParser(Parser):
 
         return retval
 
-    # $ANTLR end "arithmetic"
+    # $ANTLR end "e2"
 
     class min_return(ParserRuleReturnScope):
         def __init__(self):
@@ -911,7 +1028,7 @@ class VPLParser(Parser):
 
 
     # $ANTLR start "min"
-    # VPL.g:46:1: min : MIN LB arithmetic COMMA arithmetic RB ;
+    # VPL.g:53:1: min : MIN LB e COMMA e RB ;
     def min(self, ):
 
         retval = self.min_return()
@@ -919,57 +1036,45 @@ class VPLParser(Parser):
 
         root_0 = None
 
-        MIN34 = None
-        LB35 = None
-        COMMA37 = None
-        RB39 = None
-        arithmetic36 = None
+        MIN33 = None
+        LB34 = None
+        COMMA36 = None
+        RB38 = None
+        e35 = None
 
-        arithmetic38 = None
+        e37 = None
 
 
-        MIN34_tree = None
-        LB35_tree = None
-        COMMA37_tree = None
-        RB39_tree = None
+        MIN33_tree = None
+        LB34_tree = None
+        COMMA36_tree = None
+        RB38_tree = None
 
         try:
             try:
-                # VPL.g:46:5: ( MIN LB arithmetic COMMA arithmetic RB )
-                # VPL.g:46:7: MIN LB arithmetic COMMA arithmetic RB
+                # VPL.g:53:5: ( MIN LB e COMMA e RB )
+                # VPL.g:53:7: MIN LB e COMMA e RB
                 pass 
                 root_0 = self._adaptor.nil()
 
-                MIN34=self.match(self.input, MIN, self.FOLLOW_MIN_in_min325)
+                MIN33=self.match(self.input, MIN, self.FOLLOW_MIN_in_min362)
 
-                MIN34_tree = self._adaptor.createWithPayload(MIN34)
-                self._adaptor.addChild(root_0, MIN34_tree)
+                MIN33_tree = self._adaptor.createWithPayload(MIN33)
+                root_0 = self._adaptor.becomeRoot(MIN33_tree, root_0)
 
-                LB35=self.match(self.input, LB, self.FOLLOW_LB_in_min327)
-
-                LB35_tree = self._adaptor.createWithPayload(LB35)
-                self._adaptor.addChild(root_0, LB35_tree)
-
-                self._state.following.append(self.FOLLOW_arithmetic_in_min329)
-                arithmetic36 = self.arithmetic()
+                LB34=self.match(self.input, LB, self.FOLLOW_LB_in_min365)
+                self._state.following.append(self.FOLLOW_e_in_min368)
+                e35 = self.e()
 
                 self._state.following.pop()
-                self._adaptor.addChild(root_0, arithmetic36.tree)
-                COMMA37=self.match(self.input, COMMA, self.FOLLOW_COMMA_in_min331)
-
-                COMMA37_tree = self._adaptor.createWithPayload(COMMA37)
-                self._adaptor.addChild(root_0, COMMA37_tree)
-
-                self._state.following.append(self.FOLLOW_arithmetic_in_min333)
-                arithmetic38 = self.arithmetic()
+                self._adaptor.addChild(root_0, e35.tree)
+                COMMA36=self.match(self.input, COMMA, self.FOLLOW_COMMA_in_min370)
+                self._state.following.append(self.FOLLOW_e_in_min373)
+                e37 = self.e()
 
                 self._state.following.pop()
-                self._adaptor.addChild(root_0, arithmetic38.tree)
-                RB39=self.match(self.input, RB, self.FOLLOW_RB_in_min335)
-
-                RB39_tree = self._adaptor.createWithPayload(RB39)
-                self._adaptor.addChild(root_0, RB39_tree)
-
+                self._adaptor.addChild(root_0, e37.tree)
+                RB38=self.match(self.input, RB, self.FOLLOW_RB_in_min375)
 
 
 
@@ -1002,7 +1107,7 @@ class VPLParser(Parser):
 
 
     # $ANTLR start "nest"
-    # VPL.g:48:1: nest : LB arithmetic RB ;
+    # VPL.g:55:1: nest : LB e RB ;
     def nest(self, ):
 
         retval = self.nest_return()
@@ -1010,36 +1115,28 @@ class VPLParser(Parser):
 
         root_0 = None
 
-        LB40 = None
-        RB42 = None
-        arithmetic41 = None
+        LB39 = None
+        RB41 = None
+        e40 = None
 
 
-        LB40_tree = None
-        RB42_tree = None
+        LB39_tree = None
+        RB41_tree = None
 
         try:
             try:
-                # VPL.g:48:6: ( LB arithmetic RB )
-                # VPL.g:48:8: LB arithmetic RB
+                # VPL.g:55:6: ( LB e RB )
+                # VPL.g:55:8: LB e RB
                 pass 
                 root_0 = self._adaptor.nil()
 
-                LB40=self.match(self.input, LB, self.FOLLOW_LB_in_nest343)
-
-                LB40_tree = self._adaptor.createWithPayload(LB40)
-                self._adaptor.addChild(root_0, LB40_tree)
-
-                self._state.following.append(self.FOLLOW_arithmetic_in_nest345)
-                arithmetic41 = self.arithmetic()
+                LB39=self.match(self.input, LB, self.FOLLOW_LB_in_nest384)
+                self._state.following.append(self.FOLLOW_e_in_nest387)
+                e40 = self.e()
 
                 self._state.following.pop()
-                self._adaptor.addChild(root_0, arithmetic41.tree)
-                RB42=self.match(self.input, RB, self.FOLLOW_RB_in_nest347)
-
-                RB42_tree = self._adaptor.createWithPayload(RB42)
-                self._adaptor.addChild(root_0, RB42_tree)
-
+                self._adaptor.addChild(root_0, e40.tree)
+                RB41=self.match(self.input, RB, self.FOLLOW_RB_in_nest389)
 
 
 
@@ -1062,7 +1159,7 @@ class VPLParser(Parser):
 
     # $ANTLR end "nest"
 
-    class atom_return(ParserRuleReturnScope):
+    class e3_return(ParserRuleReturnScope):
         def __init__(self):
             ParserRuleReturnScope.__init__(self)
 
@@ -1071,33 +1168,33 @@ class VPLParser(Parser):
 
 
 
-    # $ANTLR start "atom"
-    # VPL.g:50:1: atom : ( IDENT | NUMBER | min | nest ) ;
-    def atom(self, ):
+    # $ANTLR start "e3"
+    # VPL.g:57:1: e3 : ( IDENT | NUMBER | min | nest ) ;
+    def e3(self, ):
 
-        retval = self.atom_return()
+        retval = self.e3_return()
         retval.start = self.input.LT(1)
 
         root_0 = None
 
-        IDENT43 = None
-        NUMBER44 = None
-        min45 = None
+        IDENT42 = None
+        NUMBER43 = None
+        min44 = None
 
-        nest46 = None
+        nest45 = None
 
 
-        IDENT43_tree = None
-        NUMBER44_tree = None
+        IDENT42_tree = None
+        NUMBER43_tree = None
 
         try:
             try:
-                # VPL.g:50:6: ( ( IDENT | NUMBER | min | nest ) )
-                # VPL.g:50:8: ( IDENT | NUMBER | min | nest )
+                # VPL.g:57:4: ( ( IDENT | NUMBER | min | nest ) )
+                # VPL.g:57:6: ( IDENT | NUMBER | min | nest )
                 pass 
                 root_0 = self._adaptor.nil()
 
-                # VPL.g:50:8: ( IDENT | NUMBER | min | nest )
+                # VPL.g:57:6: ( IDENT | NUMBER | min | nest )
                 alt10 = 4
                 LA10 = self.input.LA(1)
                 if LA10 == IDENT:
@@ -1114,43 +1211,43 @@ class VPLParser(Parser):
                     raise nvae
 
                 if alt10 == 1:
-                    # VPL.g:50:9: IDENT
+                    # VPL.g:57:7: IDENT
                     pass 
-                    IDENT43=self.match(self.input, IDENT, self.FOLLOW_IDENT_in_atom356)
+                    IDENT42=self.match(self.input, IDENT, self.FOLLOW_IDENT_in_e3399)
 
-                    IDENT43_tree = self._adaptor.createWithPayload(IDENT43)
-                    self._adaptor.addChild(root_0, IDENT43_tree)
+                    IDENT42_tree = self._adaptor.createWithPayload(IDENT42)
+                    self._adaptor.addChild(root_0, IDENT42_tree)
 
 
 
                 elif alt10 == 2:
-                    # VPL.g:50:17: NUMBER
+                    # VPL.g:57:15: NUMBER
                     pass 
-                    NUMBER44=self.match(self.input, NUMBER, self.FOLLOW_NUMBER_in_atom360)
+                    NUMBER43=self.match(self.input, NUMBER, self.FOLLOW_NUMBER_in_e3403)
 
-                    NUMBER44_tree = self._adaptor.createWithPayload(NUMBER44)
-                    self._adaptor.addChild(root_0, NUMBER44_tree)
+                    NUMBER43_tree = self._adaptor.createWithPayload(NUMBER43)
+                    self._adaptor.addChild(root_0, NUMBER43_tree)
 
 
 
                 elif alt10 == 3:
-                    # VPL.g:50:26: min
+                    # VPL.g:57:24: min
                     pass 
-                    self._state.following.append(self.FOLLOW_min_in_atom364)
-                    min45 = self.min()
+                    self._state.following.append(self.FOLLOW_min_in_e3407)
+                    min44 = self.min()
 
                     self._state.following.pop()
-                    self._adaptor.addChild(root_0, min45.tree)
+                    self._adaptor.addChild(root_0, min44.tree)
 
 
                 elif alt10 == 4:
-                    # VPL.g:50:32: nest
+                    # VPL.g:57:30: nest
                     pass 
-                    self._state.following.append(self.FOLLOW_nest_in_atom368)
-                    nest46 = self.nest()
+                    self._state.following.append(self.FOLLOW_nest_in_e3411)
+                    nest45 = self.nest()
 
                     self._state.following.pop()
-                    self._adaptor.addChild(root_0, nest46.tree)
+                    self._adaptor.addChild(root_0, nest45.tree)
 
 
 
@@ -1174,7 +1271,7 @@ class VPLParser(Parser):
 
         return retval
 
-    # $ANTLR end "atom"
+    # $ANTLR end "e3"
 
 
     # Delegated rules
@@ -1182,52 +1279,51 @@ class VPLParser(Parser):
 
  
 
-    FOLLOW_function_in_start151 = frozenset([1, 4])
-    FOLLOW_FUNC_in_function163 = frozenset([18])
-    FOLLOW_IDENT_in_function165 = frozenset([12, 16, 18])
-    FOLLOW_param_in_function167 = frozenset([12, 16, 18])
-    FOLLOW_define_in_function169 = frozenset([12, 16, 18])
-    FOLLOW_statements_in_function171 = frozenset([5])
-    FOLLOW_END_in_function173 = frozenset([1])
-    FOLLOW_LB_in_param181 = frozenset([18])
-    FOLLOW_list_in_param183 = frozenset([13])
-    FOLLOW_RB_in_param185 = frozenset([1, 12])
-    FOLLOW_IDENT_in_list195 = frozenset([1, 11])
-    FOLLOW_COMMA_in_list198 = frozenset([18])
-    FOLLOW_IDENT_in_list200 = frozenset([1, 11])
-    FOLLOW_VAR_in_define211 = frozenset([18])
-    FOLLOW_list_in_define213 = frozenset([14])
-    FOLLOW_SEMICOLON_in_define215 = frozenset([1, 16])
-    FOLLOW_statement_in_statements225 = frozenset([1, 14])
-    FOLLOW_SEMICOLON_in_statements228 = frozenset([12, 16, 18])
-    FOLLOW_statement_in_statements230 = frozenset([1, 14])
-    FOLLOW_IDENT_in_statement243 = frozenset([15])
-    FOLLOW_EQUAL_in_statement245 = frozenset([10, 12, 18, 19])
-    FOLLOW_arithmetic_in_statement247 = frozenset([1])
-    FOLLOW_IDENT_in_statement252 = frozenset([12])
-    FOLLOW_LB_in_statement254 = frozenset([18])
-    FOLLOW_list_in_statement256 = frozenset([13])
-    FOLLOW_RB_in_statement258 = frozenset([1])
-    FOLLOW_atom_in_arithmetic269 = frozenset([1, 6, 7, 8, 9])
-    FOLLOW_set_in_arithmetic272 = frozenset([10, 12, 18, 19])
-    FOLLOW_atom_in_arithmetic282 = frozenset([1, 6, 7, 8, 9])
-    FOLLOW_set_in_arithmetic288 = frozenset([10, 12, 18, 19])
-    FOLLOW_atom_in_arithmetic298 = frozenset([1, 6, 7, 8, 9])
-    FOLLOW_set_in_arithmetic301 = frozenset([10, 12, 18, 19])
-    FOLLOW_atom_in_arithmetic311 = frozenset([1, 6, 7, 8, 9])
-    FOLLOW_MIN_in_min325 = frozenset([12])
-    FOLLOW_LB_in_min327 = frozenset([10, 12, 18, 19])
-    FOLLOW_arithmetic_in_min329 = frozenset([11])
-    FOLLOW_COMMA_in_min331 = frozenset([10, 12, 18, 19])
-    FOLLOW_arithmetic_in_min333 = frozenset([13])
-    FOLLOW_RB_in_min335 = frozenset([1])
-    FOLLOW_LB_in_nest343 = frozenset([10, 12, 18, 19])
-    FOLLOW_arithmetic_in_nest345 = frozenset([13])
-    FOLLOW_RB_in_nest347 = frozenset([1])
-    FOLLOW_IDENT_in_atom356 = frozenset([1])
-    FOLLOW_NUMBER_in_atom360 = frozenset([1])
-    FOLLOW_min_in_atom364 = frozenset([1])
-    FOLLOW_nest_in_atom368 = frozenset([1])
+    FOLLOW_function_in_start168 = frozenset([1, 8])
+    FOLLOW_FUNC_in_function188 = frozenset([22])
+    FOLLOW_IDENT_in_function191 = frozenset([16, 18, 20, 22])
+    FOLLOW_param_in_function194 = frozenset([16, 18, 20, 22])
+    FOLLOW_define_in_function196 = frozenset([16, 18, 20, 22])
+    FOLLOW_statements_in_function198 = frozenset([9])
+    FOLLOW_END_in_function200 = frozenset([1])
+    FOLLOW_LB_in_param209 = frozenset([22])
+    FOLLOW_list_in_param211 = frozenset([17])
+    FOLLOW_RB_in_param213 = frozenset([1])
+    FOLLOW_IDENT_in_list230 = frozenset([1, 15])
+    FOLLOW_COMMA_in_list233 = frozenset([22])
+    FOLLOW_IDENT_in_list236 = frozenset([1, 15])
+    FOLLOW_VAR_in_define247 = frozenset([22])
+    FOLLOW_list_in_define249 = frozenset([18])
+    FOLLOW_SEMICOLON_in_define251 = frozenset([1])
+    FOLLOW_statement_in_statements269 = frozenset([1, 18])
+    FOLLOW_SEMICOLON_in_statements272 = frozenset([18, 22])
+    FOLLOW_statement_in_statements274 = frozenset([1, 18])
+    FOLLOW_IDENT_in_statement295 = frozenset([19])
+    FOLLOW_EQUAL_in_statement297 = frozenset([14, 16, 22, 23])
+    FOLLOW_e_in_statement300 = frozenset([1])
+    FOLLOW_IDENT_in_statement306 = frozenset([16])
+    FOLLOW_LB_in_statement309 = frozenset([22])
+    FOLLOW_list_in_statement312 = frozenset([17])
+    FOLLOW_RB_in_statement314 = frozenset([1])
+    FOLLOW_e2_in_e324 = frozenset([1, 10, 11])
+    FOLLOW_set_in_e326 = frozenset([14, 16, 22, 23])
+    FOLLOW_e2_in_e333 = frozenset([1, 10, 11])
+    FOLLOW_e3_in_e2342 = frozenset([1, 12, 13])
+    FOLLOW_set_in_e2344 = frozenset([14, 16, 22, 23])
+    FOLLOW_e3_in_e2351 = frozenset([1, 12, 13])
+    FOLLOW_MIN_in_min362 = frozenset([16])
+    FOLLOW_LB_in_min365 = frozenset([14, 16, 22, 23])
+    FOLLOW_e_in_min368 = frozenset([15])
+    FOLLOW_COMMA_in_min370 = frozenset([14, 16, 22, 23])
+    FOLLOW_e_in_min373 = frozenset([17])
+    FOLLOW_RB_in_min375 = frozenset([1])
+    FOLLOW_LB_in_nest384 = frozenset([14, 16, 22, 23])
+    FOLLOW_e_in_nest387 = frozenset([17])
+    FOLLOW_RB_in_nest389 = frozenset([1])
+    FOLLOW_IDENT_in_e3399 = frozenset([1])
+    FOLLOW_NUMBER_in_e3403 = frozenset([1])
+    FOLLOW_min_in_e3407 = frozenset([1])
+    FOLLOW_nest_in_e3411 = frozenset([1])
 
 
 
