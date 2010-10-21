@@ -60,11 +60,11 @@ def funct(root, out):
 # const variables may be == global
 def element(childs, out):
 	base = childs[0]
-	# E + E
+	# E + E, nesting not working
 	if str(childs[1]) in ['+', '-', '\\', '*']:
 		out = element(childs[1].children, out)
 		
-	# min (E,E)
+	# min (E,E) not working
 	elif str(childs[1]) == "min":
 		out = MIN_FOUND
 		out += element(childs[1].children, out)
@@ -75,7 +75,7 @@ def element(childs, out):
 	
 	# NUM
 	elif str(childs[1]).isdigit():
-		return ASSIGN_FOUND % { "base":str(childs[0]), "ident":str(childs[1]) }
+		return ASSIGN_FOUND % { "base":str(childs[1]), "ident":str(childs[0]) }
 	
 	else:
 		return COMPERR
