@@ -17,10 +17,12 @@ func_template = '''
 '''
 #allocate local variables has to be generated first in functions
 local_template = '''
-	movl 8(%ebp), %eax # allocate local variables
-	imull $4*%(var_num)s, %eax, %eax
-	addl $15, %eax
+	movl 8(%ebp), %eax
+	imull $4, %eax, %eax
+	addl $16, %eax
+	imull $4*%(var_num)s, %eax, %eax	
 	subl %eax, %esp
+	andl $-16, %esp
 '''
 # place parameter var_num into destreg
 par_template = '''
@@ -30,11 +32,11 @@ par_template = '''
 # place local var_num into destreg
 local_template = '''
 	movl 8(%ebp), %(destreg)s
-	imull $4*%(var_num)s, %(destreg)s, %(destreg)s
+	imull $4, %(destreg)s, %(destreg)s
 	addl $16, %(destreg)s
+	imull $%(var_num)s, %(destreg)s, %(destreg)s
 	subl %ebp, %(destreg)s
 	negl %(destreg)s
-	sub $15, %(destreg)s
 	andl $-16, %(destreg)s
 '''
 # place constant val into destreg
