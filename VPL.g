@@ -7,6 +7,11 @@ options {
 
 tokens {
 	
+	BASE;
+	PARAMS;
+	DEFINES;
+	STATEMENTS;
+
 	FUNC = 'func';
 	END = 'end';
 	PLUS = '+';
@@ -27,19 +32,19 @@ tokens {
 * PARSER RULES
 *-----------------------------------------------------------------*/
 
-start : (function)* ;
+start : (function)* -> ^(BASE function*);
 	
 function : FUNC IDENT param define statements END;
 
-param: (LB list RB)* ;
+param: (LB list RB)? ;
 
 list: IDENT (COMMA IDENT)* ;
 
-define: (VAR list SEMICOLON)* ;
+define: (VAR list SEMICOLON)? ;
 
 statements: statement (SEMICOLON statement)* ;
 	
-statement: ((IDENT EQUAL arithmetic) | IDENT LB list RB);
+statement: ((IDENT EQUAL arithmetic)? | IDENT LB list RB);
 	
 arithmetic :  atom (( MULT | DIV ) atom )* (( PLUS | MINUS ) atom (( MULT | DIV ) atom )*)*;
 	
