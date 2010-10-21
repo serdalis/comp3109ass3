@@ -34,25 +34,27 @@ tokens {
 
 start : (function)* -> ^(BASE function*);
 	
-function : FUNC IDENT param define statements END;
+function : FUNC! IDENT^ param define statements END!;
 
-param: (LB list RB)? ;
+param: (LB list RB)? -> ^(PARAMS list);
 
-list: IDENT (COMMA IDENT)* ;
+list: IDENT (COMMA! IDENT)* ;
 
-define: (VAR list SEMICOLON)? ;
+define: (VAR list SEMICOLON)? -> ^(DEFINES list?);
 
-statements: statement (SEMICOLON statement)* ;
+statements: statement (SEMICOLON statement)* -> ^(STATEMENTS statement*);
 	
-statement: ((IDENT EQUAL arithmetic)? | IDENT LB list RB);
-	
-arithmetic :  atom (( MULT | DIV ) atom )* (( PLUS | MINUS ) atom (( MULT | DIV ) atom )*)*;
-	
-min : MIN LB arithmetic COMMA arithmetic RB;
+statement: ((IDENT EQUAL^ e)? | IDENT^ LB! list RB!) ;
 
-nest : LB arithmetic RB;
+e: e2((PLUS|MINUS)^ e2)*;
 
-atom : (IDENT | NUMBER | min | nest) ;
+e2: e3((MULT|DIV)^ e3)*;
+	
+min : MIN^ LB! e COMMA! e RB!;
+
+nest : LB! e RB!;
+
+e3 : (IDENT | NUMBER | min | nest) ;
 
 /*----------------------------------------------------------------
 * LEXAR RULES
