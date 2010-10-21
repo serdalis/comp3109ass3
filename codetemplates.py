@@ -34,10 +34,9 @@ localaddr_template = '''
 	movl 8(%%ebp), %%eax
 	imull $4s, %%eax, %%eax
 	addl $16, %%eax
-	imull $<%(var_num)s>, %%eax, %%eax
+	imull $%(var_num)s, %%eax, %%eax
 	subl %ebp, %(destreg)s
 	negl %(destreg)s
-	sub $15, %(destreg)s
 	andl $-16, %(destreg)s
 '''
 # place constant val into destreg
