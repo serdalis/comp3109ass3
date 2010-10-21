@@ -1,3 +1,4 @@
+# assign function
 func_template = '''
 	.text
 	.align 4, 0x90
@@ -14,34 +15,41 @@ func_template = '''
 	leave
 	ret
 '''
-
-var_template = '''
+#allocate local variables has to be generated first in functions
+local_template = '''
 	movl 8(%ebp), %eax # allocate local variables
-	imull $4*<N>, %eax, %eax
+	imull $4*%(var_num)s, %eax, %eax
 	addl $15, %eax
 	subl %eax, %esp
+'''
+# place parameter var_num into destreg
+par_template = '''
+	movl 8+4*%(var_num)s (%ebp), %(destreg)s
 
-	movl 8+4*<N> (%ebp), <destreg>
-
-	movl 8(%ebp), <destreg>
-	imull $4*<N>, <destreg>, <destreg>
-	addl $16, <destreg>
-	subl %ebp, <destreg>
-	negl <destreg>
-	sub $15, <destreg>
-	andl $-16, <destreg>
-
-	movl $.const<X>, <destreg>
+'''
+# place local var_num into destreg
+local_template = '''
+	movl 8(%ebp), %(destreg)s
+	imull $4*%(var_num)s, %(destreg)s, %(destreg)s
+	addl $16, %(destreg)s
+	subl %ebp, %(destreg)s
+	negl %(destreg)s
+	sub $15, %(destreg)s
+	andl $-16, %(destreg)s
+'''
+# place constant val into destreg
+const_template = '''
+	movl $.const%(val)s, %(destreg)s
 
 	.data
 	.align 16
-	.const<X>:
-		.float <X>
-		.float <X>
-		.float <X>
-		.float <X>
+	.const%(val)s:
+		.float %(val)s
+		.float %(val)s
+		.float %(val)s
+		.float %(val)s
 '''
-
+# ident = factor
 equ_template = '''
 	<load source address into %eax>
 	<load destination address into %edx>
@@ -59,6 +67,7 @@ equ_template = '''
 		loopl .loop_begin<X>
 	.loop_end<X>:
 '''
+# ident = factor OP factor
 equWithOp_template = '''
 	<load source1 address into %eax>
 	<load source2 address into %ebx>
@@ -80,6 +89,7 @@ equWithOp_template = '''
 		loopl .loop_begin<X>
 	.loop_end<X>:
 '''
+#invoke a function
 invoke_template = '''
 	# invoke function <name>
 	subl $4*<N+1>, %esp # grow the stack
