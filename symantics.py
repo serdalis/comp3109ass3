@@ -62,26 +62,34 @@ def funct(root, out):
 # parameter variables are unknown at the moment
 # const variables may be == global
 def element(root, out):
-	# E + E, nesting not working
+	# set the 2 children expected from element
 	base = root.children[0]
 	op = root.children[1]
 
+	# check for E + | - | / | * E
 	if str(op) in ['+', '-', '/', '*']: 
 		out = IDENT_OP_FOUND % { "rest":element(op, out), "op":str(op), "base":str(base) }
 
+	# check for min( E, E)
 	elif str(op) == "min":
 		out = MIN_FOUND % { "inner":element(op, out) }
 
+	# check for E = num
 	elif str(op).isdigit():
 		out = ASSIGN_FOUND % {"base":str(base), "ident":str(op) }
 	
+	#check for other E cases
 	elif ident.match(str(op)):
+		# if both E are IDENTS
 		if ident.match(str(base)):
+			# nested operations
 			if str(root) in ['+', '-', '/', '*']:
 				out = str(base) + " " + str(op)
-			else:
+			# assign ident to ident
+            else:
 				out = ASSIGN_FOUND % { "base":str(base), "ident":str(op) }
-		elif str(base).isdigit():
+		# assign num to ident
+        elif str(base).isdigit():
 			out = IDENT_FOUND % { "ident":str(base) }
 	else:
 		return COMPERR
