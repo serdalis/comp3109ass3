@@ -2,13 +2,14 @@ import re
 import codetemplates
 
 ident = re.compile('[a-zA-Z_]+')
+oper = ['+', '-', '/', '*']
 COMPERR = "unknown token reached!\n"
 FUNCT_FOUND = "function %(fun)s found\n"
 LOC_VAR_FOUND = "local variable found %(var)s\n"
 DEFINE_FOUND = "DEFINES found with %(def)s\n" 
 LIST_FOUND = "list found with %(list)d\n" 
-IDENT_OP_FOUND = "%(base)s %(op)s %(rest)s "
-MIN_FOUND = "min %(inner)s "
+IDENT_OP_FOUND = "%(base)s %(rest)s "
+MIN_CODE = "min(%(first)s, %(sec)s) "
 IDENT_FOUND = "ident %(ident)s "
 ASSIGN_FOUND = "assign %(base)s to %(ident)s "
 
@@ -67,12 +68,26 @@ def element(root, out):
 	op = root.children[1]
 
 	# check for E + | - | / | * E
-	if str(op) in ['+', '-', '/', '*']: 
-		out = IDENT_OP_FOUND % { "rest":element(op, out), "op":str(op), "base":str(base) }
+	if str(op) in oper: 
+		out = IDENT_OP_FOUND % { "rest":element(op, out), "base":str(base) }
 
 	# check for min( E, E)
 	elif str(op) == "min":
-		out = MIN_FOUND % { "inner":element(op, out) }
+		out = element(op, out)
+
+	elif str(root) == "min":
+		# find the nests
+		if len(base.children) == 2:
+			first = element(base, out)
+		else:
+			first = str(case)
+		if len(op.children) == 2:
+			sec = element(op,out)
+		else:
+			sec = str(op)
+		#min code
+		out = MIN_CODE % { "first":first, "sec":sec }	
+
 
 	# check for E = num
 	elif str(op).isdigit():
@@ -83,8 +98,8 @@ def element(root, out):
 		# if both E are IDENTS
 		if ident.match(str(base)):
 			# nested operations
-			if str(root) in ['+', '-', '/', '*']:
-				out = str(base) + " " + str(op)
+			if str(root) in oper:
+				out = str(base) + " " + str(root) + " " + str(op)
 			# assign ident to ident
 			else:
 				out = ASSIGN_FOUND % { "base":str(base), "ident":str(op) }
