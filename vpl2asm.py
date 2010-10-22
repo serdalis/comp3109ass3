@@ -20,7 +20,7 @@ sys.stderr.write(util.print_tree(root))
 
 for func in root.children:
 	fbody = "";
-	allocate = alloclocal_template % { "var_num":len func.children[1].children), "body":fbody}
+	allocate = alloclocal_template % { "var_num":len(func.children[1].children), "body":fbody}
 	print func_template % {"name": str(root.children[0]), "body": allocate}
 
 
