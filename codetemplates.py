@@ -1,17 +1,17 @@
 # assign function
 func_template = '''
-	.text
-	.align 4, 0x90
+.text
+.align 4, 0x90
 
-	.global %(name)s
+.global %(name)s
 	%(name)s:
 		pushl	%%ebp
-		movl	%%esp, ebp
-		pushl	%%ebx
+		movl	%%esp, %%ebp
+		pushl	%%eax
 
 %(body)s
 	
-	movl	-4(%%ebp), %%ebx
+	pop %%eax
 	leave
 	ret
 '''
@@ -20,9 +20,16 @@ alloclocal_template = '''
 	movl 8(%%ebp), %%eax
 	imull $4, %%eax, %%eax
 	addl $16, %%eax
-	imull $<%(var_num)s>, %%eax, %%eax
+	imull $%(var_num)s, %%eax, %%eax
 	subl %%eax, %%esp
 	andl $-16, %%esp
+
+	%(body)s
+	
+	movl %%ebp, %%eax
+	subl $4, %%eax
+	movl %%eax, %%esp
+	
 '''
 # place parameter var_num into destreg
 par_template = '''
@@ -45,13 +52,13 @@ constaddr_template = '''
 '''
 
 consttable_template = '''
-	.data
-	.align 16
-	.const%(val)s:
-		.float %(val)s
-		.float %(val)s
-		.float %(val)s
-		.float %(val)s
+.data
+.align 16
+.const%(val)s:
+	.float %(val)s
+	.float %(val)s
+	.float %(val)s
+	.float %(val)s
 '''
 # ident = factor
 equ_template = '''
@@ -62,14 +69,14 @@ equ_template = '''
 	shrl $2, %%ecx
 	jz .loop_end<X>
 
-	.loop_begin<X>:
-		movaps (%%eax), %%xmm0
-		movaps %%xmm0, (%%edx)
+.loop_begin<X>:
+	movaps (%%eax), %%xmm0
+	movaps %%xmm0, (%%edx)
 
-		addl $16, %%eax #add this line if %eax is not pointing to a constant
-		addl $16, %%edx
-		loopl .loop_begin<X>
-	.loop_end<X>:
+	addl $16, %%eax #add this line if %eax is not pointing to a constant
+	addl $16, %%edx
+	loopl .loop_begin<X>
+.loop_end<X>:
 '''
 # ident = factor OP factor
 equWithOp_template = '''
@@ -81,17 +88,17 @@ equWithOp_template = '''
 	shrl $2, %%ecx
 	jz .loop_end<X>
 
-	.loop_begin<X>:
-		movaps (%%eax), %%xmm0
-		movaps (%%ebx), %%xmm1
-		<operation> %%xmm0, %%xmm1
-		movaps %%xmm1, (%%edx)
+.loop_begin<X>:
+	movaps (%%eax), %%xmm0
+	movaps (%%ebx), %%xmm1
+	<operation> %%xmm0, %%xmm1
+	movaps %%xmm1, (%%edx)
 
-		addl $16, %%eax #add this line if %eax is not pointing to a constant
-		addl $16, %%ebx #add this line if %ebx is not pointing to a constant
-		addl $16, %%edx
-		loopl .loop_begin<X>
-	.loop_end<X>:
+	addl $16, %%eax #add this line if %eax is not pointing to a constant
+	addl $16, %%ebx #add this line if %ebx is not pointing to a constant
+	addl $16, %%edx
+	loopl .loop_begin<X>
+.loop_end<X>:
 '''
 #invoke a function
 invoke_template = '''
@@ -99,7 +106,6 @@ invoke_template = '''
 	subl $4*<N+1>, %%esp # grow the stack
 	movl <argN>, %%eax # setup argN
 	movl %eax, <4*N>(%%esp)
-...
 	movl <arg1>, %%eax # setup arg1
 	movl %%eax, 4(%%esp)
 	movl 8(%%ebp), %%eax # setup implicit vector length
