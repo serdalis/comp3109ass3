@@ -27,7 +27,7 @@ for func in root.children:
 	stmts = "";
 	
 	for i, param in enumerate(func.children[0].children):
-		symbol_table[str(param)] = par_template.substitute(var_num= str(i));
+		symbol_table[str(param)] = par_template.substitute(var_num= str(i+1));
 		
 	for i, define in enumerate(func.children[1].children):
 		symbol_table[str(define)] = getdefine_template.substitute(var_num= str(i));
@@ -39,7 +39,7 @@ for func in root.children:
 				symbol_table[str(statement.children[1])] = constaddr_template.substitute(val = float(str(statement.children[1])))
 				sa = symbol_table[str(statement.children[1])] % {"destreg": "%ebx"}
 				da = symbol_table[str(statement.children[0])] % {"destreg": "%eax"}
-				stmts = equ_template.substitute(sourceaddr = sa, destaddr = da, loop_val = lv)
+				stmts += equ_template.substitute(sourceaddr = sa, destaddr = da, loop_val = lv)
 				lv += 1
 		###TODO: Function Calls
 		

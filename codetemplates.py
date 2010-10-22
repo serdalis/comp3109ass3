@@ -21,17 +21,14 @@ ret
 
 #allocate local variables has to be generated first in functions
 setdefine_template = Template('''
-#setdefine for $var_num variables
-	
+#setdefine for $var_num variables	
 	movl 8(%ebp), %eax
 	imull $$4, %eax, %eax
 	addl $$16, %eax
 	imull $$$var_num, %eax, %eax
 	subl %eax, %esp
 	andl $$-16, %esp
-
-	$body
-	
+	$body	
 #Shrink stack
 	movl %ebp, %eax
 	subl $$4, %eax
@@ -41,14 +38,12 @@ setdefine_template = Template('''
 # place parameter var_num into destreg
 par_template = Template('''
 #placing address of $var_num into %(destreg)s
-	
 	movl 8+4*$var_num (%%ebp), %(destreg)s
 ''')
 
 # place local var_num into destreg
 getdefine_template = Template('''
 #placing address of local variable $var_num into %(destreg)s
-
 	movl 8(%%ebp), %(destreg)s
 	imull $$4, %(destreg)s, %(destreg)s
 	addl $$16, %(destreg)s
@@ -78,7 +73,6 @@ consttable_template = Template('''
 equ_template = Template('''
 	$sourceaddr
 	$destaddr
-	
 
 	movl 8(%ebp), %ecx
 	shrl $$2, %ecx
@@ -88,8 +82,7 @@ equ_template = Template('''
 	movaps (%ebx), %xmm0
 	movaps %xmm0, (%eax)
 
-	addl $$16, %eax #add this line if %%eax is not pointing to a constant
-	addl $$16, %ebx
+	addl $$16, %eax
 	loopl .loop_begin$loop_val
 .loop_end$loop_val:
 ''')
