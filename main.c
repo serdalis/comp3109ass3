@@ -17,6 +17,7 @@ int main(void)
 	b= 	(float *) align(b, SSE_ALIGN);
 	c= 	(float *) align(c, SSE_ALIGN);
 	
+	foo(NUM,a);
 	return 0; 
 }
 

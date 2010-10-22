@@ -1,3 +1,5 @@
 func foo(a)
-	a = min(1,2);
+	var x;
+	a = 5;
+	foo(x)
 end
