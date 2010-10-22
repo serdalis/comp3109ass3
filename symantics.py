@@ -86,7 +86,7 @@ def element(root, out):
 			if str(root) in ['+', '-', '/', '*']:
 				out = str(base) + " " + str(op)
 			# assign ident to ident
-            else:
+			else:
 				out = ASSIGN_FOUND % { "base":str(base), "ident":str(op) }
 		# assign num to ident
         elif str(base).isdigit():
