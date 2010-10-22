@@ -18,6 +18,8 @@ int main(void)
 	c= 	(float *) align(c, SSE_ALIGN);
 	
 	foo(NUM,a);
+
+	printf("%f\n%f\n", a, b);
 	return 0; 
 }
 

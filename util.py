@@ -6,3 +6,10 @@ def print_tree(root, out="", level=0):
 	for t in root.children:
 		out = print_tree(t, out, level + 1)
 	return out
+	
+def is_numeric(value):
+	try:
+		float(value)
+	except ValueError, e:
+		return False
+	return True

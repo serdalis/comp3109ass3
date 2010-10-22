@@ -7,53 +7,61 @@ func_template = Template('''
 .align 4, 0x90
 
 .global $name
-	$name:
-		pushl	%%ebp
-		movl	%%esp, %%ebp
-		pushl	%%eax
-		
+$name:
+	pushl	%ebp
+	movl	%esp, %ebp
+	pushl	%eax
+	
 $body
 
-	pop %%eax
-	leave
-	ret
+pop %eax
+leave
+ret
 ''')
 
 #allocate local variables has to be generated first in functions
 setdefine_template = Template('''
-	movl 8(%%ebp), %%eax
-	imull $$4, %%eax, %%eax
-	addl $$16, %%eax
-	imull $$$var_num, %%eax, %%eax
-	subl %%eax, %%esp
-	andl $$-16, %%esp
+#setdefine for $var_num variables
+	
+	movl 8(%ebp), %eax
+	imull $$4, %eax, %eax
+	addl $$16, %eax
+	imull $$$var_num, %eax, %eax
+	subl %eax, %esp
+	andl $$-16, %esp
 
 	$body
 	
-	movl %%ebp, %%eax
-	subl $$4, %%eax
-	movl %%eax, %%esp
+#Shrink stack
+	movl %ebp, %eax
+	subl $$4, %eax
+	movl %eax, %esp
 	
 ''')
 # place parameter var_num into destreg
 par_template = Template('''
-	movl 8+4*$var_num (%%ebp), %destreg
+#placing address of $var_num into %(destreg)s
+	
+	movl 8+4*$var_num (%%ebp), %(destreg)s
 ''')
 
 # place local var_num into destreg
 getdefine_template = Template('''
-	movl 8(%%ebp), %destreg
-	imull $$4, %destreg, %destreg
-	addl $$16, %destreg
-	imull $$$var_num, %destreg, %destreg
-	subl %%ebp, %destreg
-	negl %destreg
-	andl $$-16, %destreg
+#placing address of local variable $var_num into %(destreg)s
+
+	movl 8(%%ebp), %(destreg)s
+	imull $$4, %(destreg)s, %(destreg)s
+	addl $$16, %(destreg)s
+	imull $$$var_num, %(destreg)s, %(destreg)s
+	subl %%ebp, %(destreg)s
+	negl %(destreg)s
+	andl $$-16, %(destreg)s
 ''')
 
 # place constant val into destreg
 constaddr_template = Template('''
-	movl $$.const$val, %destreg
+#placing address of const $val into %(destreg)s
+	movl $$.const$val, %(destreg)s
 ''')
 
 consttable_template = Template('''
@@ -68,22 +76,22 @@ consttable_template = Template('''
 
 # ident = factor
 equ_template = Template('''
-	movl $sourceaddr, %%ebx
-	movl $destaddr, %%eax
+	$sourceaddr
+	$destaddr
 	
 
-	movl 8(%%ebp), %%ecx
-	shrl $$2, %%ecx
-	jz .loop_end<X>
+	movl 8(%ebp), %ecx
+	shrl $$2, %ecx
+	jz .loop_end$loop_val
 
-.loop_begin<X>:
-	movaps (%%ebx), %%xmm0
-	movaps %%xmm0, (%%eax)
+.loop_begin$loop_val:
+	movaps (%ebx), %xmm0
+	movaps %xmm0, (%eax)
 
-	addl $$16, %%eax #add this line if %%eax is not pointing to a constant
-	addl $$16, %%ebx
-	loopl .loop_begin<X>
-.loop_end<X>:
+	addl $$16, %eax #add this line if %%eax is not pointing to a constant
+	addl $$16, %ebx
+	loopl .loop_begin$loop_val
+.loop_end$loop_val:
 ''')
 
 # ident = factor OP factor
@@ -94,9 +102,9 @@ equWithOp_template = '''
 
 	movl 8(%%ebp), %%ecx
 	shrl $$2, %%ecx
-	jz .loop_end<X>
+	jz .loop_end$loop_val
 
-.loop_begin<X>:
+.loop_begin$loop_val:
 	movaps (%%eax), %%xmm0
 	movaps (%%ebx), %%xmm1
 	$operation %%xmm0, %%xmm1
@@ -105,8 +113,8 @@ equWithOp_template = '''
 	addl $$16, %%eax #add this line if %%eax is not pointing to a constant
 	addl $$16, %%ebx #add this line if %%ebx is not pointing to a constant
 	addl $$16, %%edx
-	loopl .loop_begin<X>
-.loop_end<X>:
+	loopl .loop_begin$loop_val
+.loop_end$loop_val:
 '''
 #invoke a function
 invoke_template = '''
