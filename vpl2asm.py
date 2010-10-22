@@ -22,6 +22,8 @@ sys.stderr.write(util.print_tree(root))
 symbol_table = {}
 lv = 0;
 
+op_table = {"+": "addps", "-": "subps", "*": "mulps", "/": "divps"}
+
 for func in root.children:
 	
 	stmts = "";
@@ -34,16 +36,40 @@ for func in root.children:
 		
 	for statement in func.children[2].children:
 		if(str(statement) == '='):
-			if util.is_numeric(str(statement.children[1])):
-				print consttable_template.substitute(val = float(str(statement.children[1])))
-				symbol_table[str(statement.children[1])] = constaddr_template.substitute(val = float(str(statement.children[1])))
-				ifn_c = ""
-			elif str(statement.children[1]).isalpha():
-				ifn_c = "addl $16, %ebx"
-			sa = symbol_table[str(statement.children[1])] % {"destreg": "%ebx"}
-			da = symbol_table[str(statement.children[0])] % {"destreg": "%eax"}
-			stmts += equ_template.substitute(sourceaddr = sa, destaddr = da, loop_val = lv, ifnot_constant = ifn_c)
-			lv += 1
+			if str(statement.children[1]) in op_table:
+				#print statement.children[1].children[0]
+				#print .children[1]
+				op_parent = statement.children[1]
+				if util.is_numeric(str(op_parent.children[0])):
+					print consttable_template.substitute(val = float(str(op_parent.children[0])))
+					symbol_table[str(op_parent.children[0])] = constaddr_template.substitute(val = float(str(op_parent.children[0])))
+					ifn_c1 = ""
+				elif str(op_parent.children[0]).isalpha():
+					ifn_c1 = "addl $16, %ebx"
+				if util.is_numeric(str(op_parent.children[1])):
+					print consttable_template.substitute(val = float(str(op_parent.children[1])))
+					symbol_table[str(op_parent.children[1])] = constaddr_template.substitute(val = float(str(op_parent.children[1])))
+					ifn_c2 = ""
+				elif str(op_parent.children[1]).isalpha():
+					ifn_c2 = "addl $16, %edx"
+					
+				sa1 = symbol_table[str(op_parent.children[0])] % {"destreg": "%ebx"}
+				sa2 = symbol_table[str(op_parent.children[1])] % {"destreg": "%edx"}
+				da = symbol_table[str(statement.children[0])] % {"destreg": "%eax"}
+				stmts += equWithOp_template.substitute(sourceaddr_1 = sa1, sourceaddr_2 = sa2, destaddr = da, loop_val = lv, operation = op_table[str(op_parent)], ifnot_constant_1 = ifn_c1, ifnot_constant_2 = ifn_c2)
+				lv += 1
+			else:
+				if util.is_numeric(str(statement.children[1])):
+					print consttable_template.substitute(val = float(str(statement.children[1])))
+					symbol_table[str(statement.children[1])] = constaddr_template.substitute(val = float(str(statement.children[1])))
+					ifn_c = ""
+				elif str(statement.children[1]).isalpha():
+					ifn_c = "addl $16, %ebx"
+					
+				sa = symbol_table[str(statement.children[1])] % {"destreg": "%ebx"}
+				da = symbol_table[str(statement.children[0])] % {"destreg": "%eax"}
+				stmts += equ_template.substitute(sourceaddr = sa, destaddr = da, loop_val = lv, ifnot_constant = ifn_c)
+				lv += 1
 		###TODO: Function Calls
 		
 	fbody = stmts;

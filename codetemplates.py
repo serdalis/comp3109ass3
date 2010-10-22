@@ -71,6 +71,7 @@ consttable_template = Template('''
 
 # ident = factor
 equ_template = Template('''
+#ident = factor
 	$sourceaddr
 	$destaddr
 
@@ -89,27 +90,28 @@ equ_template = Template('''
 ''')
 
 # ident = factor OP factor
-equWithOp_template = '''
-	movl $sourceaddr1, %%ebx
-	movl $sourceaddr2, %%edx
-	movl $destaddr, %%eax
+equWithOp_template = Template('''
+#ident = factor op factor
+	$sourceaddr_1
+	$sourceaddr_2
+	$destaddr
 
-	movl 8(%%ebp), %%ecx
-	shrl $$2, %%ecx
+	movl 8(%ebp), %ecx
+	shrl $$2, %ecx
 	jz .loop_end$loop_val
 
 .loop_begin$loop_val:
-	movaps (%%eax), %%xmm0
-	movaps (%%ebx), %%xmm1
-	$operation %%xmm0, %%xmm1
-	movaps %%xmm1, (%%edx)
+	movaps (%ebx), %xmm0
+	movaps (%edx), %xmm1
+	$operation %xmm0, %xmm1
+	movaps %xmm1, (%eax)
 
-	addl $$16, %%eax #add this line if %%eax is not pointing to a constant
-	addl $$16, %%ebx #add this line if %%ebx is not pointing to a constant
-	addl $$16, %%edx
+	$ifnot_constant_1
+	$ifnot_constant_2
+	addl $$16, %eax
 	loopl .loop_begin$loop_val
 .loop_end$loop_val:
-'''
+''')
 #invoke a function
 invoke_template = '''
 	# invoke function <name>

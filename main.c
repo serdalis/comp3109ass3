@@ -10,7 +10,7 @@
 /* Number of elements */ 
 #define NUM (12)
 
-extern void foo(int, float *, float *);
+extern void foo(int, float *, float *, float *);
 int main(void) 
 { 	
 	int i;
@@ -22,7 +22,7 @@ int main(void)
 	b= 	(float *) align(b, SSE_ALIGN);
 	c= 	(float *) align(c, SSE_ALIGN);
 	
-	foo(NUM, a, b);
+	foo(NUM, a, b, c);
 
 	for (i = 0; i < NUM; i++)
 		printf("Vector: a[%d] -> %f\n", i, a[i]);
