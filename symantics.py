@@ -2,14 +2,16 @@ import re
 import codetemplates
 
 ident = re.compile('[a-zA-Z_]+')
+oper = ['+', '-', '/', '*']
 COMPERR = "unknown token reached!\n"
 FUNCT_FOUND = "function %(fun)s found\n"
 LOC_VAR_FOUND = "local variable found %(var)s\n"
 DEFINE_FOUND = "DEFINES found with %(def)s\n" 
 LIST_FOUND = "list found with %(list)d\n" 
-MIN_FOUND = "min found\n"
-IDENT_FOUND = "ident %(ident)s found\n"
-ASSIGN_FOUND = "assign %(base)s to %(ident)s found\n"
+IDENT_OP_FOUND = "%(base)s %(rest)s "
+MIN_CODE = "min(%(first)s, %(sec)s) "
+IDENT_FOUND = "ident %(ident)s "
+ASSIGN_FOUND = "assign %(base)s to %(ident)s "
 
 # traverse the tree and look for the lowest level parents
 def traverse_tree(root, out=""):
@@ -43,11 +45,13 @@ def funct(root, out):
 		elif str(i) == "STATEMENTS": 
 			for t in i.children:
 				if str(t) == "=":
-					out += element(t.children, out)
+					out += element(t, out) + "\n"
 				elif len(t.children) > 1:
 					out += LIST_FOUND % { "list":len(t.children) }
 				else:
 					return COMPERR
+		
+		# return compiler error on failure
 		else:
 			return COMPERR
 	return out
@@ -58,25 +62,50 @@ def funct(root, out):
 # assuming level >= 1, then the variables are local
 # parameter variables are unknown at the moment
 # const variables may be == global
-def element(childs, out):
-	base = childs[0]
-	# E + E, nesting not working
-	if str(childs[1]) in ['+', '-', '\\', '*']:
-		out = element(childs[1].children, out)
-		
-	# min (E,E) not working
-	elif str(childs[1]) == "min":
-		out = MIN_FOUND
-		out += element(childs[1].children, out)
+def element(root, out):
+	# set the 2 children expected from element
+	base = root.children[0]
+	op = root.children[1]
+
+	# check for E + | - | / | * E
+	if str(op) in oper: 
+		out = IDENT_OP_FOUND % { "rest":element(op, out), "base":str(base) }
+
+	# check for min( E, E)
+	elif str(op) == "min":
+		out = element(op, out)
+
+	elif str(root) == "min":
+		# find the nests
+		if len(base.children) == 2:
+			first = element(base, out)
+		else:
+			first = str(case)
+		if len(op.children) == 2:
+			sec = element(op,out)
+		else:
+			sec = str(op)
+		#min code
+		out = MIN_CODE % { "first":first, "sec":sec }	
+
+
+	# check for E = num
+	elif str(op).isdigit():
+		out = ASSIGN_FOUND % {"base":str(base), "ident":str(op) }
 	
-	# IDENT
-	elif ident.match(str(childs[1])):
-		return IDENT_FOUND % { "ident":str(childs[0]) }
-	
-	# NUM
-	elif str(childs[1]).isdigit():
-		return ASSIGN_FOUND % { "base":str(childs[1]), "ident":str(childs[0]) }
-	
+	#check for other E cases
+	elif ident.match(str(op)):
+		# if both E are IDENTS
+		if ident.match(str(base)):
+			# nested operations
+			if str(root) in oper:
+				out = str(base) + " " + str(root) + " " + str(op)
+			# assign ident to ident
+			else:
+				out = ASSIGN_FOUND % { "base":str(base), "ident":str(op) }
+		# assign num to ident
+        elif str(base).isdigit():
+			out = IDENT_FOUND % { "ident":str(base) }
 	else:
 		return COMPERR
 	return out
