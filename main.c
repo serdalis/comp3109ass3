@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h> 
 #include <math.h>
 #include <time.h>
@@ -7,7 +8,7 @@
 /* Alignment for SSE unit */ 
 #define SSE_ALIGN (16)
 /* Number of elements */ 
-#define NUM (10)
+#define NUM (12)
 
 extern void foo(int, float *, float *);
 int main(void) 
