@@ -30,17 +30,20 @@ for func in root.children:
 		symbol_table[str(param)] = par_template.substitute(var_num= str(i+1));
 		
 	for i, define in enumerate(func.children[1].children):
-		symbol_table[str(define)] = getdefine_template.substitute(var_num= str(i));
+		symbol_table[str(define)] = getdefine_template.substitute(var_num= str(i+1));
 		
 	for statement in func.children[2].children:
 		if(str(statement) == '='):
 			if util.is_numeric(str(statement.children[1])):
 				print consttable_template.substitute(val = float(str(statement.children[1])))
 				symbol_table[str(statement.children[1])] = constaddr_template.substitute(val = float(str(statement.children[1])))
-				sa = symbol_table[str(statement.children[1])] % {"destreg": "%ebx"}
-				da = symbol_table[str(statement.children[0])] % {"destreg": "%eax"}
-				stmts += equ_template.substitute(sourceaddr = sa, destaddr = da, loop_val = lv)
-				lv += 1
+				ifn_c = ""
+			elif str(statement.children[1]).isalpha():
+				ifn_c = "addl $16, %ebx"
+			sa = symbol_table[str(statement.children[1])] % {"destreg": "%ebx"}
+			da = symbol_table[str(statement.children[0])] % {"destreg": "%eax"}
+			stmts += equ_template.substitute(sourceaddr = sa, destaddr = da, loop_val = lv, ifnot_constant = ifn_c)
+			lv += 1
 		###TODO: Function Calls
 		
 	fbody = stmts;

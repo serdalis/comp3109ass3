@@ -82,6 +82,7 @@ equ_template = Template('''
 	movaps (%ebx), %xmm0
 	movaps %xmm0, (%eax)
 
+	$ifnot_constant
 	addl $$16, %eax
 	loopl .loop_begin$loop_val
 .loop_end$loop_val:
