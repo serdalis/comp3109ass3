@@ -113,15 +113,15 @@ equWithOp_template = Template('''
 .loop_end$loop_val:
 ''')
 #invoke a function
-invoke_template = '''
-	# invoke function <name>
-	subl $$4*<N+1>, %%esp # grow the stack
-	movl <argN>, %%eax # setup argN
-	movl %%eax, <4*N>(%%esp)
-	movl <arg1>, %%eax # setup arg1
-	movl %%eax, 4(%%esp)
-	movl 8(%%ebp), %%eax # setup implicit vector length
-	movl %%eax, 0(%%esp)
+invoke_template = Template('''
+#invoke function <name>
+	subl $$4*<N+1>, %esp # grow the stack
+	movl <argN>, %eax # setup argN
+	movl %eax, <4*N>(%esp)
+	movl <arg1>, %eax # setup arg1
+	movl %eax, 4(%esp)
+	movl 8(%%ebp), %eax # setup implicit vector length
+	movl %eax, 0(%esp)
 	call <name> # invoke the function
 	addl $$4*<N+1>, %%esp # restore the stack
-'''
+''')
