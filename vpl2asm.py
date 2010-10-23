@@ -17,5 +17,4 @@ parser = VPLParser(tokens)
 r = parser.start()
 
 root = r.tree
-sys.stderr.write(util.print_tree(root))
 compiler.create(root)

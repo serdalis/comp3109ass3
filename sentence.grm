@@ -1,3 +1,0 @@
-func mymin(a, b, c)
-	c = min(a,b) + 20;
-end

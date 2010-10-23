@@ -1,0 +1,10 @@
+func foo(a,b,c)
+	a = 1 + 2 + 3; 
+	b = 1 + 2 + 4;
+	bar(a);
+	c =	min(a,b)
+end
+
+func bar(d)
+	d = d / 2
+end

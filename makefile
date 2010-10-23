@@ -8,18 +8,22 @@ setup:
 	@mkdir -p build
 
 %.vpl: antlr
-	@echo "Parsing $@ and Generating Assembly..."
+	@echo "parsing input file $@"
+	@echo "generating assembly"
 	@python vpl2asm.py < $@ > target.s
+	@echo "compiling"
 	gcc -w -Wall -pedantic -g target.s main.c -o run
-	@echo "Ensure this is run on a 32-bit architecture, as x64 has a different instruction set"
+	@echo "type ./run to execute program"
 
 antlr: setup
 	@echo "Building ANTLR Parser..."
 	@java -cp antlr-3.1.2.jar org.antlr.Tool -o $(BUILDDIR) $(GRAMMARFILE)
 	@echo "Done."
+
 clean:
 	rm -f $(BUILDDIR)/*
 	rm -f run
+
 veryclean: clean
 	rm -f *.s
 	rm -f *.pyc
