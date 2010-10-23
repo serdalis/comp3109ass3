@@ -20,49 +20,27 @@ root = r.tree
 sys.stderr.write(util.print_tree(root))
 
 symbol_table = {}
+temp_vars = []
 lv = 0;
 
 op_table = {"+": "addps", "-": "subps", "*": "mulps", "/": "divps"}
 
 def is_operator(op_parent, destination, local_var_count, lv):
-	#for each child of operator
-		#if child is operator
-			#create temp var using lvc
-			#call is_operator on (child, temp_var, lvc, lv)
-			#set source asm for temp var
-			
-		#else (base case - child is a param/const)
-			#check states of child and gen asm
-			#set source asm for var
-			
-		#set dest asm for destination
 	
 	asm = ""
-	###print str(op_parent), str(destination)
-	###for child in op_parent.children:
-	###	print str(child)
-	###	if str(child) in op_table:
-	###		print "create temp var"
-	###		local_var_count += 1;
-	###		is_operator(child, "temp_var" + str(local_var_count), local_var_count, lv)
-	###		print "set source asm for temp_var" + str(local_var_count)
-	###	else:
-	###		print "check states of child and gen asm"
-	###		print "set source asm for " + str(child)
-	###	
-	###print "set dest asm for " + str(destination)
-	###print
-	
-	###return "overall asm"
 	
 	for child in op_parent.children:
 		if str(child) in op_table:
-			tvar = local_var_count
+			tvar = getdefine_template.substitute(var_num = str(local_var_count))
 			local_var_count += 1
-			exec 'sa%s = getdefine_template.substitute(var_num = str(tvar)) % {"destreg": "eax"}' % str(child.getChildIndex())
 			asm += is_operator(child, tvar, local_var_count, lv)
+			if int(str(child.getChildIndex())) == 0:
+				ifn_c1 = ""
+				sa1 = tvar % {"destreg": "%ebx"}
+			else:
+				ifn_c2 = ""
+				sa2 = tvar % {"destreg": "%edx"}
 		else:
-			###print str(child), str(child.getChildIndex())
 			if util.is_numeric(str(child)):
 				if str(child) not in symbol_table:
 					print consttable_template.substitute(val = float(str(child)))
@@ -77,12 +55,15 @@ def is_operator(op_parent, destination, local_var_count, lv):
 				else:
 					ifn_c2 = "addl $16, %edx"
 		
-		if int(str(child.getChildIndex())) == 0:
-			sa1 = symbol_table[str(child)] % {"destreg": "%ebx"}
-		else:
-			sa2 = symbol_table[str(child)] % {"destreg": "%edx"}
-				
-	da = symbol_table[str(destination)] % {"destreg": "%eax"}
+			if int(str(child.getChildIndex())) == 0:
+				sa1 = symbol_table[str(child)] % {"destreg": "%ebx"}
+			else:
+				sa2 = symbol_table[str(child)] % {"destreg": "%edx"}
+	
+	if str(destination) in symbol_table:
+		da = symbol_table[str(destination)] % {"destreg": "%eax"}
+	else:
+		da = destination % {"destreg": "%eax"}
 	asm += equWithOp_template.substitute(sourceaddr_1 = sa1, sourceaddr_2 = sa2, destaddr = da, loop_val = lv, operation = op_table[str(op_parent)], ifnot_constant_1 = ifn_c1, ifnot_constant_2 = ifn_c2)
 	lv += 1
 	return asm
