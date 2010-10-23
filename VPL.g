@@ -6,7 +6,7 @@ options {
 }
 
 tokens {
-	
+
 	BASE;
 	PARAMS;
 	DEFINES;
@@ -33,7 +33,7 @@ tokens {
 *-----------------------------------------------------------------*/
 
 start : (function)* -> ^(BASE function*);
-	
+
 function : FUNC! IDENT^ param define statements END!;
 
 param: (LB list RB)? -> ^(PARAMS list);
@@ -43,18 +43,19 @@ list: IDENT (COMMA! IDENT)* ;
 define: (VAR list SEMICOLON)? -> ^(DEFINES list?);
 
 statements: statement (SEMICOLON statement)* -> ^(STATEMENTS statement*);
-	
+
 statement: ((IDENT EQUAL^ e)? | IDENT^ LB! list RB!) ;
 
 e: e2((PLUS|MINUS)^ e2)*;
 
 e2: e3((MULT|DIV)^ e3)*;
-	
+
 min : MIN^ LB! e COMMA! e RB!;
 
 nest : LB! e RB!;
 
 e3 : (IDENT | NUMBER | min | nest) ;
+
 
 /*----------------------------------------------------------------
 * LEXAR RULES

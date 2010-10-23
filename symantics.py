@@ -1,15 +1,27 @@
 import re
+import codetemplates
 
 ident = re.compile('[a-zA-Z_]+')
+oper = ['+', '-', '/', '*']
 COMPERR = "unknown token reached!\n"
+FUNCT_FOUND = "function %(fun)s found\n"
+LOC_VAR_FOUND = "local variable found %(var)s\n"
+DEFINE_FOUND = "DEFINES found with %(def)s\n" 
+LIST_FOUND = "list found with %(list)d\n" 
+IDENT_OP_FOUND = "%(base)s %(rest)s "
+MIN_CODE = "min(%(first)s, %(sec)s) "
+IDENT_FOUND = "ident %(ident)s "
+ASSIGN_FOUND = "assign %(base)s to %(ident)s "
 
 # traverse the tree and look for the lowest level parents
 def traverse_tree(root, out=""):
-  # handles M cases
-  if str(root) == "BASE":
-    if ident.match(str(root)):
-      funct(root.children, out)
-  return out
+	# handles M cases
+	if str(root) == "BASE": 
+		for t in root.children: 
+			if ident.match(str(t)):
+				out += FUNCT_FOUND % { "fun":str(t) } 
+				out = funct(t.children, out)
+	return out
 
 # handles all F cases
 # used for when a function is called
@@ -18,29 +30,31 @@ def traverse_tree(root, out=""):
 # then goes through STATMENTS and executes
 # then returns out
 def funct(root, out):
-    # handles all 'P' cases
-    if str(root) == "PARAMS":
-      for t in root.children:
-        out += "local variable found %(var)s\n" % { "var":str(t) }
+	# handles all 'P' cases
+	for i in root:
+		if str(i) == "PARAMS":
+			for t in i.children:
+				out += LOC_VAR_FOUND % { "var":str(t) }
 
-    # handles all 'D' cases
-    else if str(root) == "DEFINES":
-      for t in root.children:
-        out += "DEFINES found with %(def)s\n" % { "def":str(t) }
+		# handles all 'D' cases
+		elif str(i) == "DEFINES":
+			for t in i.children:
+				out += DEFINE_FOUND % { "def":str(t) }
 
-    # handles all 'S' cases
-    else if str(root) == "STATEMENTS": 
-      for t in root.children:
-        if str(t) == "=":
-          out += element(t.children, out)
-        else if len(t.children) > 2:
-          out += "list found with %(list)d\n" % { "list":len(t.children) }
-        else:
-          out += COMPERR
-    
-    else:
-      return COMPERR
-    return out
+		# handles all 'S' cases
+		elif str(i) == "STATEMENTS": 
+			for t in i.children:
+				if str(t) == "=":
+					out += element(t, out) + "\n"
+				elif len(t.children) > 1:
+					out += LIST_FOUND % { "list":len(t.children) }
+				else:
+					return COMPERR
+		
+		# return compiler error on failure
+		else:
+			return COMPERR
+	return out
 # END funct
 
 # handles all E cases
@@ -48,26 +62,51 @@ def funct(root, out):
 # assuming level >= 1, then the variables are local
 # parameter variables are unknown at the moment
 # const variables may be == global
-def element( childs, out):
-  base = childs[0]
-  # E + E
-  if str(childs[1]) in ['+', '-', '\', '*']:
-    out += element(childs[1].children, out)
+def element(root, out):
+	# set the 2 children expected from element
+	base = root.children[0]
+	op = root.children[1]
 
-  # min (E,E)
-  else if str(childs[1]) == "min":
-    out += "min found\n"
-    out += element(childs[1].children, out)
+	# check for E + | - | / | * E
+	if str(op) in oper: 
+		out = IDENT_OP_FOUND % { "rest":element(op, out), "base":str(base) }
 
-  # IDENT
-  else if ident.match(str(childs[1])):
-    return "ident %(ident)s found\n" % { "ident":str(childs[0]) }
+	# check for min( E, E)
+	elif str(op) == "min":
+		out = element(op, out)
 
-  # NUM
-  else if str(root).isdigit():
-    return "assign %(base)s to %(ident)s found\n" % { "base":str(childs[0]), "ident":str(childs[1]) }
+	elif str(root) == "min":
+		# find the nests
+		if len(base.children) == 2:
+			first = element(base, out)
+		else:
+			first = str(case)
+		if len(op.children) == 2:
+			sec = element(op,out)
+		else:
+			sec = str(op)
+		#min code
+		out = MIN_CODE % { "first":first, "sec":sec }	
 
-  else:
-    return COMPERR
-  return out
+
+	# check for E = num
+	elif str(op).isdigit():
+		out = ASSIGN_FOUND % {"base":str(base), "ident":str(op) }
+	
+	#check for other E cases
+	elif ident.match(str(op)):
+		# if both E are IDENTS
+		if ident.match(str(base)):
+			# nested operations
+			if str(root) in oper:
+				out = str(base) + " " + str(root) + " " + str(op)
+			# assign ident to ident
+			else:
+				out = ASSIGN_FOUND % { "base":str(base), "ident":str(op) }
+		# assign num to ident
+        elif str(base).isdigit():
+			out = IDENT_FOUND % { "ident":str(base) }
+	else:
+		return COMPERR
+	return out
 # END element

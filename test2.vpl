@@ -2,9 +2,12 @@ func foo(a,b,c)
 	a = 1;
 	b = 2;
 	c = a+b;
+	i (a,b,c,d,e,f);
 end
 
 func bar(y,z)
+	var s;
 	y = 3;
 	z = 4;
+	z = min( y, z);
 end
