@@ -72,7 +72,6 @@ def is_operator(op_parent, destination, local_var_count):
 	
 for func in root.children:
 
-	global lv
 	local_var_count = 0;
 	stmts = "";
 
@@ -106,12 +105,19 @@ for func in root.children:
 				da = symbol_table[str(statement.children[0])] % {"destreg": "%eax"}
 				stmts += equ_template.substitute(sourceaddr = sa, destaddr = da, loop_val = lv, ifnot_constant = ifn_c)
 				lv += 1
-		###else:
+		else:
+			invoke_asm = ""
+			total_args = len(statement.children)
+			arg_template = """\n%(arg)s\n\tmovl %%eax, %(N)s(%%esp)"""
 
-
+			for arg in statement.children:
+				invoke_asm +=  arg_template % {"arg": symbol_table[str(arg)] % {"destreg": "%eax"}, "N": str(total_args*4)}
+				total_args -= 1
+			
+			stmts += invoke_template.substitute(name = str(statement), Nplus1 = len(statement.children) + 1, args = invoke_asm)
+	
 	fbody = stmts;
 	
 	#temporary variable management is 'create space for as many temp variables as will be needed'
 	allocate = setdefine_template.substitute(var_num= util.max_locals(func), body = fbody)
-	###print symbol_table.keys()
-	print func_template.substitute(name= str(root.children[0]), body= allocate)
+	print func_template.substitute(name= str(func), body= allocate)

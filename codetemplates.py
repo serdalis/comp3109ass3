@@ -2,7 +2,7 @@ from string import Template
 
 # assign function
 
-func_template = Template('''
+func_template = Template('''#FUNCTION $name
 .text
 .align 4, 0x90
 
@@ -91,7 +91,7 @@ equ_template = Template('''
 
 # ident = factor OP factor
 equWithOp_template = Template('''
-#ident = factor op factor
+#ident = factor OP factor
 	$sourceaddr_1
 	$sourceaddr_2
 	$destaddr
@@ -103,8 +103,8 @@ equWithOp_template = Template('''
 .loop_begin$loop_val:
 	movaps (%ebx), %xmm0
 	movaps (%edx), %xmm1
-	$operation %xmm0, %xmm1
-	movaps %xmm1, (%eax)
+	$operation %xmm1, %xmm0
+	movaps %xmm0, (%eax)
 
 	$ifnot_constant_1
 	$ifnot_constant_2
@@ -112,16 +112,14 @@ equWithOp_template = Template('''
 	loopl .loop_begin$loop_val
 .loop_end$loop_val:
 ''')
+
 #invoke a function
 invoke_template = Template('''
-#invoke function <name>
-	subl $$4*<N+1>, %esp # grow the stack
-	movl <argN>, %eax # setup argN
-	movl %eax, <4*N>(%esp)
-	movl <arg1>, %eax # setup arg1
-	movl %eax, 4(%esp)
-	movl 8(%%ebp), %eax # setup implicit vector length
+#invoke function $name
+	subl $$4*$Nplus1, %esp # grow the stack
+	$args
+	movl 8(%ebp), %eax # setup implicit vector length
 	movl %eax, 0(%esp)
-	call <name> # invoke the function
-	addl $$4*<N+1>, %%esp # restore the stack
+	call $name
+	addl $$4*$Nplus1, %esp # restore the stack
 ''')
