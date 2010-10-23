@@ -24,16 +24,19 @@ int main(void)
 	
 	foo(NUM, a, b, c);
 
+	printf("Vector a\n");
 	for (i = 0; i < NUM; i++)
-		printf("Vector: a[%d] -> %f\n", i, a[i]);
+		printf("%f\n",a[i]);
 	printf("\n");
 
+	printf("Vector b\n");
 	for (i = 0; i < NUM; i++)
-		printf("Vector: b[%d] -> %f\n", i, b[i]);
-	printf("\n", b[i]);
-
+		printf("%f\n",b[i]);
+	printf("\n");
+	
+	printf("Vector c\n");
 	for (i = 0; i < NUM; i++)
-		printf("Vector: c[%d] -> %f\n", i, c[i]);
+		printf("%f\n",c[i]);
 
 
 	return 0; 
