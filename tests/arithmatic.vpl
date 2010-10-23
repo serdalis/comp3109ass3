@@ -1,0 +1,49 @@
+func opers (a,b,c,d)
+	a = 1 + 1;
+	b = 3 - 1;
+	c = 2 * 1;
+	d = 4 / 2;
+end
+
+func numbers (a,b,c,d)
+	a = 1 + 1;
+	b = (1) + 1;
+	c = (1) + (1);
+	d = (1 + 1);
+end
+
+func numbers2 (a,b,c,d)
+	a = ((2) + 1);
+	b = ((2) + (1));
+	c = (1 + 1) + 1;
+	d = ((1 + 1) + 1);
+end
+
+func assign (a,b,c,d)
+	var e;
+	var f;
+	var g;
+
+	e = 2;
+	f = 1;
+	g = 1;
+
+	a = e;
+	b = e + g;
+	c = (e + g);
+	d = (f + g) + a;
+end
+
+func min1 (a,b,c,d)
+	a = min(2,1);
+	b = min(1,2);
+	c = min((2+2),(1+2));
+	d = min((1+2),(2+2));
+end
+
+func min2 (a,b,c,d)
+	a = min(2,1);
+	b = min(1,2);
+	c = min(a+2, b);
+	d = min(a*3,b) + 3;
+end
