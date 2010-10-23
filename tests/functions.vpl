@@ -1,0 +1,19 @@
+func fun1 (a)
+	a = 1;
+end
+
+func fun1 (b)
+	b = 2;
+end
+
+func fun1 (c)
+	c = 3;
+end
+
+func fun1 (d)
+	d = 4;
+end
+
+func fun1 (e)
+	e = 5;
+end
