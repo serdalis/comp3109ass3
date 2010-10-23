@@ -1,5 +1,0 @@
-func foo(a)
-	var x;
-	a = 5;
-	foo(x)
-end
