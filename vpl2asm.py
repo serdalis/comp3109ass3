@@ -23,7 +23,8 @@ symbol_table = {}
 temp_vars = []
 lv = 0
 
-op_table = {"+": "addps", "-": "subps", "*": "mulps", "/": "divps"}
+op_table = {"+": "addps", "-": "subps", "*": "mulps", "/": "divps", "min": "minps"}
+
 
 def is_operator(op_parent, destination, local_var_count):
 	
@@ -109,6 +110,8 @@ for func in root.children:
 
 
 	fbody = stmts;
+	
+	#temporary variable management is 'create space for as many temp variables as will be needed'
 	allocate = setdefine_template.substitute(var_num= util.max_locals(func), body = fbody)
 	###print symbol_table.keys()
 	print func_template.substitute(name= str(root.children[0]), body= allocate)
