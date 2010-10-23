@@ -21,24 +21,25 @@ sys.stderr.write(util.print_tree(root))
 
 symbol_table = {}
 temp_vars = []
-lv = 0;
+lv = 0
 
 op_table = {"+": "addps", "-": "subps", "*": "mulps", "/": "divps"}
 
-def is_operator(op_parent, destination, local_var_count, lv):
+def is_operator(op_parent, destination, local_var_count):
 	
+	global lv
 	asm = ""
 	
 	for child in op_parent.children:
 		if str(child) in op_table:
-			tvar = getdefine_template.substitute(var_num = str(local_var_count))
 			local_var_count += 1
-			asm += is_operator(child, tvar, local_var_count, lv)
+			tvar = getdefine_template.substitute(var_num = str(local_var_count))
+			asm += is_operator(child, tvar, local_var_count)
 			if int(str(child.getChildIndex())) == 0:
-				ifn_c1 = ""
+				ifn_c1 = "addl $16, %ebx"
 				sa1 = tvar % {"destreg": "%ebx"}
 			else:
-				ifn_c2 = ""
+				ifn_c2 = "addl $16, %edx"
 				sa2 = tvar % {"destreg": "%edx"}
 		else:
 			if util.is_numeric(str(child)):
@@ -70,6 +71,7 @@ def is_operator(op_parent, destination, local_var_count, lv):
 	
 for func in root.children:
 
+	global lv
 	local_var_count = 0;
 	stmts = "";
 
@@ -86,7 +88,7 @@ for func in root.children:
 				if str(str(statement.children[0])) not in symbol_table:
 					symbol_table[str(statement.children[0])] = getdefine_template.substitute(var_num= local_var_count +1)
 					local_var_count += 1
-				stmts += is_operator(statement.children[1], statement.children[0], local_var_count, lv)
+				stmts += is_operator(statement.children[1], statement.children[0], local_var_count)
 			else:
 				if str(statement.children[0]) not in symbol_table:
 					symbol_table[str(statement.children[0])] = getdefine_template.substitute(var_num= local_var_count +1);
@@ -108,4 +110,5 @@ for func in root.children:
 
 	fbody = stmts;
 	allocate = setdefine_template.substitute(var_num= util.max_locals(func), body = fbody)
+	###print symbol_table.keys()
 	print func_template.substitute(name= str(root.children[0]), body= allocate)
